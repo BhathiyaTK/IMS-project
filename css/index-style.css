@@ -16,13 +16,13 @@ body{
 	box-shadow: 0 6px 8px 4px rgba(0, 0, 0, 0.2), 0 6px 20px 4px rgba(0, 0, 0, 0.19);
 }
 #page-header h1{
-	padding: 20px 0 10px 0;
+	padding: 10px 0;
 	color: #fff;
 	font-family: Roboto;
 	font-size: 50px;
 }
 #page-header h3{
-	padding: 15px 0;
+	padding: 13px 0;
 	background-color: #198406;
 }
 .home-page-title{
@@ -43,14 +43,14 @@ body{
 	text-transform: uppercase;
 	word-spacing: 4px;
 	letter-spacing: 1px;
-	border-bottom: 3px solid #0b93a8;
+	border-bottom: 3px solid #d6140a;
 	margin-bottom: 10px;
 	border-radius: 20px;
 }
 .login-section-background #form-div{
 	width: 30%;
 	height: 100%;
-	margin: 30px auto;
+	margin: 50px auto;
 	padding: 35px 40px 30px 40px;
 	border-radius: 15px;
 	background-color: rgba(0,0,0,0.9);
