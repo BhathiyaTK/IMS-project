@@ -19,9 +19,8 @@ body{
 	padding: 10px 0;
 	color: #fff;
 	font-family: Roboto;
-	font-size: 50px;
 }
-#page-header h3{
+#page-header h4{
 	padding: 13px 0;
 	background-color: #198406;
 }
@@ -29,7 +28,7 @@ body{
 	text-align: center;
 	color: #fff;
 }
-.home-page-title h3{
+.home-page-title h4{
 	padding-top: 30px;
 	text-shadow: 5px 5px 15px #000;
 	margin-bottom: 20px;
@@ -39,12 +38,10 @@ body{
 .login-section-background #login-header{
 	font-family: Nunito;
 	text-align: center;
-	padding: 5px 0;
 	text-transform: uppercase;
 	word-spacing: 4px;
 	letter-spacing: 1px;
 	border-bottom: 3px solid #d6140a;
-	margin-bottom: 10px;
 	border-radius: 20px;
 }
 .login-section-background #form-div{
@@ -63,6 +60,7 @@ body{
 	font-size: 15px;
 	font-weight: bold;
 	color: #0cb4ce;
+	opacity: 0.8;
 }
 #radio-button-1{
 	padding-left: 20px;
@@ -76,10 +74,17 @@ body{
 #login-button-div{
 	margin-top: 30px;
 	text-align: center;
+	border-top: 1px solid #333;
+	padding-top: 15px;
 }
 #login-button-div button{
 	font-weight: bold;
+	font-size: 15px;
 }
 #login-button-div .btn{
-	padding: 5px 30px;
+	padding: 5px 60px;
+	border-radius: 20px;
+}
+.fas{
+	padding-left: 10px;
 }
