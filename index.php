@@ -21,12 +21,8 @@
 	<div class="login-section-background">
 		<div id="page-header">
 			<h1>Faculty of Technology - SUSL</h1>
-			<h3>Inventory Management System</h3>
+			<h4>Inventory Management System</h4>
 		</div>
-		<!--div class="home-page-title">
-			<h3>Inventory Management System</h3>
-		</div>
-		<div class="home-page-content-divider"></div-->
 		<div id="form-div">
 			<div id="login-header">
 				<h4>User Login</h4>
@@ -56,7 +52,7 @@
 				    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter Password">
 				</div>
 				<div id="login-button-div">
-					<button type="submit" class="btn btn-success">Login</button>
+					<button type="submit" class="btn btn-primary">Login<i class="fas fa-sign-in-alt"></i></button>
 				</div>
 			</form>
 		</div>
