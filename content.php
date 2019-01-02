@@ -43,6 +43,10 @@ session_start();
 </head>
 <body>
 	<script type="text/javascript">
+		$(document).ready(function(){
+			var loged_id = <?php echo $_SESSION['id'] ?>;
+			$('#row'+loged_id).remove();
+		});
 		$(function(){
 			$("#form4").on('submit', function(e4){
 				e4.preventDefault();
@@ -113,10 +117,23 @@ session_start();
 			<div id="logout-div">
 				<?php if(isset($_SESSION["username"])){ ?>
 					<h4><?php echo "Hello! ".$_SESSION["username"]; ?></h4>
-					<a href="log_out.php" class="btn btn-danger">Log out</a>
 				<?php 
 				}
 				?>
+				<p>
+					<?php
+					if (isset($_SESSION["user_type"])) {
+						if ($_SESSION["user_type"] == "admin") {
+							echo "You successfully logged as an Admin";
+						}elseif ($_SESSION["user_type"] == "manager") {
+							echo "You successfully logged as a Manager";
+						}elseif($_SESSION["user_type"] == "user"){
+							echo "You successfully logged as an User";
+						}
+					}
+					?>
+				</p>
+				<a href="log_out.php" class="btn btn-danger">Log out</a>
 				
 			</div>
 			<ul class="nav nav-tabs flex-column" id="nav-tab" role="tablist">
@@ -145,35 +162,37 @@ session_start();
 			<div class="tab-content" id="nav-tabContent">
 
 			<!-- Check inventory tab -->
-			  	<div class="tab-pane fade show active" id="nav-check" role="tabpanel" aria-labelledby="nav-check-tab">
-					<form id="form1">
-						<div class="form-row" id="check-condition-div">
-						    <div class="form-group col-md-4">
-						      	<label for="inputCity">Main Location</label>
-						      	<select id="inputState" class="form-control form-control-sm">
-						        	<option selected>Choose...</option>
-						        	<option>All</option>
-						      	</select>
-						    </div>
-						    <div class="form-group col-md-4">
-						      	<label for="inputState">Sub Location</label>
-						      	<select id="inputState" class="form-control form-control-sm">
-						        	<option selected>Choose...</option>
-						        	<option>All</option>
-						      	</select>
-						    </div>
-						    <div class="form-group col-md-4">
-						      	<label for="inputZip">Inventory Type</label>
-						      	<select id="inputState" class="form-control form-control-sm">
-						        	<option selected>Choose...</option>
-						        	<option>...</option>
-						      	</select>
-						    </div>
-						    <div id="check-button-div">
-						    	<button type="button" class="btn btn-success form-button"><i class="fas fa-search"></i>Check</button>
-						    </div>
-						</div>
-					</form>
+			  	<div class="tab-pane fade show active " id="nav-check" role="tabpanel" aria-labelledby="nav-check-tab">
+			  		<div class="check-condition-div">
+			  			<form id="form1">
+							<div class="form-row" class="check-condition-div">
+							    <div class="form-group col-md-4">
+							      	<label for="inputCity">Main Location</label>
+							      	<select id="inputState" class="form-control form-control-sm">
+							        	<option selected>Choose...</option>
+							        	<option>All</option>
+							      	</select>
+							    </div>
+							    <div class="form-group col-md-4">
+							      	<label for="inputState">Sub Location</label>
+							      	<select id="inputState" class="form-control form-control-sm">
+							        	<option selected>Choose...</option>
+							        	<option>All</option>
+							      	</select>
+							    </div>
+							    <div class="form-group col-md-4">
+							      	<label for="inputZip">Inventory Type</label>
+							      	<select id="inputState" class="form-control form-control-sm">
+							        	<option selected>Choose...</option>
+							        	<option>...</option>
+							      	</select>
+							    </div>
+							    <div id="check-button-div">
+							    	<button type="button" class="btn btn-success form-button"><i class="fas fa-search"></i>Check</button>
+							    </div>
+							</div>
+						</form>
+			  		</div>
 					<div class="table-content">
 						<table class="table table-bordered table-sm">
 							<thead class="thead-dark">
@@ -192,7 +211,7 @@ session_start();
 
 			  	<!-- Submit inventory tab -->
 			  	<div class="tab-pane fade" id="nav-submit" role="tabpanel" aria-labelledby="nav-submit-tab">
-			  		<div id="check-condition-div">
+			  		<div class="check-condition-div">
 			  			<form id="form2">
 			  				<div class="form-row" >
 							    <div class="form-group col-md-6">
@@ -255,30 +274,28 @@ session_start();
 
 			  	<!-- Add new inventory tab -->
 			  	<div class="tab-pane fade" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">
-			  		<div id="check-condition-div">
+			  		<div class="check-condition-div">
 			  			<form id="form3">
 			  				<div class="form-row">
-							    <div class="form-group col-md-6">
-							      	<label for="inputState">Main Inventory Name</label>
+							    <div class="form-group col-md-12">
+							      	<label for="inputZip">Inventory Type</label>
+							      	<select id="inputState" class="form-control form-control-sm">
+							        	<option selected>Choose...</option>
+							        	<option value="main">Main Inventory</option>
+							        	<option value="sub">Sub Inventory</option>
+							      	</select>
+							    </div>
+							    <div class="form-group col-md-12">
+							      	<label for="inputZip">Inventory Name</label>
+							      	<input type="text" class="form-control form-control-sm" placeholder="Inventory name here...">
+							    </div>
+							    <div class="form-group col-md-12">
+							      	<label for="inputZip">Inventory Code</label>
 							      	<input type="text" class="form-control form-control-sm" placeholder="Inventory code here...">
-							    </div>
-							    <div class="form-group col-md-6">
-							      	<label for="inputZip">Main Inventory Code</label>
-							      	<input type="text" class="form-control form-control-sm" placeholder="Quantity here...">
-							    </div>
-							</div>
-							<div class="form-row">
-							    <div class="form-group col-md-6">
-							      	<label for="inputCity">Sub Inventory Name</label>
-							      	<input type="text" class="form-control form-control-sm" placeholder="Price per item here...">
-							    </div>
-							    <div class="form-group col-md-6">
-							      	<label for="inputState">Sub Inventory Code</label>
-							      	<input type="text" class="form-control form-control-sm" placeholder="Purchased date here...">
 							    </div>
 							</div>
 						    <div id="check-button-div">
-						    	<button type="button" class="btn btn-success form-button"><i class="fas fa-plus"></i>Add Inventory</button>
+						    	<button type="button" class="btn btn-success form-button"><i class="fas fa-plus"></i>Add New Inventory</button>
 						    </div>
 			  			</form>
 			  		</div>
@@ -287,7 +304,7 @@ session_start();
 			  	
 	<!-- User manage tab -->
 			  	<div class="tab-pane fade" id="nav-user" role="tabpanel" aria-labelledby="nav-user-tab">
-			  		<div id="check-condition-div">
+			  		<div class="check-condition-div">
 			  			<form id="form4">
 			  				<div class="form-row">
 			  					<div class="form-group col-md-2">
