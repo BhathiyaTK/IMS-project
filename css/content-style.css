@@ -1,3 +1,6 @@
+body{
+	height: auto;
+}
 #page-header{
 	text-align: center;
 	background-color: rgba(140, 12, 29);
@@ -26,7 +29,7 @@
 	text-align: center;
 	font-size: 14px;
 }
-#check-condition-div, .table-content{
+.check-condition-div{
 	padding: 13px 20px 20px 20px;
 	border: 1px solid #ccced1;
 	border-radius: 10px;
@@ -48,10 +51,13 @@ label{
 .fas{
 	padding-right: 10px;
 }
+#nav-new{
+	width: 45%;
+}
 /*//////////////////////tabs align left side/////////////////////////*/
 #nav-tab{
 	margin-top: 5px;
-	padding: 10px 0 10px 30px;
+	padding: 10px 0 10px 20px;
 	border-bottom: none;
 	border-right: 1px solid #b2b2b2;
 	background-color: #eee;
@@ -91,9 +97,20 @@ label{
 #logout-div h4{
 	padding: 5px 0;
 }
-#logout-div button{
+#logout-div a{
+	color: #fff;
 	padding: 5px 20px;
+}
+#logout-div p{
+	font-size: 14px;
+	color: #0ecc14;
 }
 .form-button{
 	margin-top: 20px;
+}
+#user-details{
+	margin-top: 30px;
+}
+table{
+	text-align: center;
 }
