@@ -43,7 +43,30 @@ session_start();
 </head>
 <body>
 	<script type="text/javascript">
+		//add new item part
+		$(function(){
+			$("#form3").on('submit', function(e3){
+				e3.preventDefault();
+
+				var inventory_type = $("#inventory_type").val();
+				var inventory_name = $("#inventory_name").val();
+				var inventory_code = $("#inventory_code").val();
+				$.ajax({
+					type: 'POST',
+					url: 'add_new_item.php',
+					data: {inventory_type:inventory_type, inventory_name:inventory_name, inventory_code:inventory_code},
+					success: function(data3){
+						$("#form3")[0].reset();
+						$("#add_new_item_alert").html(data3).show();
+						$("#add_new_item_alert").fadeOut(5000);
+					}
+				});
+			});
+		});
+
+		//user manage part
 		$(document).ready(function(){
+			$("#add_new_item_alert").hide();
 			var loged_id = <?php echo $_SESSION['id'] ?>;
 			$('#row'+loged_id).remove();
 		});
@@ -71,16 +94,6 @@ session_start();
 				});
 			});
 		});
-		/*$("#form4").validate({
-        	rules: {
-        		title: "required",
-        		userrole: "required"
-        	},
-    		messages: {
-    			title: "Please select the title",
-		      	userrole: "Please select the user role"
-		    }
-        });*/
 		$(function() {
             $(".user_del_btn").click(function() {
                 var user_id = $(this).attr("id");
@@ -279,7 +292,7 @@ session_start();
 			  				<div class="form-row">
 							    <div class="form-group col-md-12">
 							      	<label for="inputZip">Inventory Type</label>
-							      	<select id="inputState" class="form-control form-control-sm">
+							      	<select id="inputState" class="form-control form-control-sm" id="inventory_type" name="inventory_type">
 							        	<option selected>Choose...</option>
 							        	<option value="main">Main Inventory</option>
 							        	<option value="sub">Sub Inventory</option>
@@ -287,18 +300,19 @@ session_start();
 							    </div>
 							    <div class="form-group col-md-12">
 							      	<label for="inputZip">Inventory Name</label>
-							      	<input type="text" class="form-control form-control-sm" placeholder="Inventory name here...">
+							      	<input type="text" class="form-control form-control-sm" id="inventory_name" name="inventory_name" placeholder="Inventory name here...">
 							    </div>
 							    <div class="form-group col-md-12">
 							      	<label for="inputZip">Inventory Code</label>
-							      	<input type="text" class="form-control form-control-sm" placeholder="Inventory code here...">
+							      	<input type="text" class="form-control form-control-sm" id="inventory_code" name="inventory_code" placeholder="Inventory code here...">
 							    </div>
 							</div>
 						    <div id="check-button-div">
-						    	<button type="button" class="btn btn-success form-button"><i class="fas fa-plus"></i>Add New Inventory</button>
+						    	<button type="submit" class="btn btn-success form-button" id="new_item_add_btn"><i class="fas fa-plus"></i>Add New Inventory</button>
 						    </div>
 			  			</form>
 			  		</div>
+			  		<div class="alert alert-success" id="add_new_item_alert"></div>
 			  	</div>
 
 			  	
