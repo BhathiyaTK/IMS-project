@@ -54,6 +54,10 @@ label{
 #nav-new{
 	width: 45%;
 }
+#add_new_item_alert{
+	text-align: center;
+	margin-top: 20px;
+}
 /*//////////////////////tabs align left side/////////////////////////*/
 #nav-tab{
 	margin-top: 5px;
