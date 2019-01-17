@@ -35,37 +35,89 @@ session_start();
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/moment.min.js"></script>
+	<script src="https://unpkg.com/jspdf@1.5.3/dist/jspdf.min.js"></script>
+	<script src="https://unpkg.com/jspdf-autotable@3.0.2/dist/jspdf.plugin.autotable.js"></script>
+	<script src="js/tableHTMLExport.js"></script>
 	<script src="js/jquery.calendar.js"></script>
 	<link rel="stylesheet" href="css/jquery.calendar.css">
 	<script src="js/script.js"></script>
 	<link rel="stylesheet" href="css/style.css">
 	
-	<title>IMS | Home page</title>
+	<title>IMS | Home</title>
 </head>
 <body>
 	<script type="text/javascript">
 		//document ready functions...
 		$(document).ready(function(){
-			$("#add_main_item_code_div").hide();
-			$("#sub_item_addname_label").html("Inventory name");
-			$("#sub_item_addcode_label").html("Inventory code");
-			$("#inventory_type").click(function(){
-				$select_type_val = $("#inventory_type").val();
-				if ($select_type_val == "sub") {
-					$("#sub_item_addname_label").html("Sub inventory name");
-					$("#sub_item_addcode_label").html("Sub inventory code");
-					$("#add_main_item_code_div").show(500);
-				}else if ($select_type_val == "main") {
-					$("#sub_item_addname_label").html("Inventory name");
-					$("#sub_item_addcode_label").html("Inventory code");
-					$("#add_main_item_code_div").hide(500);
+			$("#serial_num").hide();
+			$("#serial_num_check").click(function(){
+				if ($(this).prop("checked")) {
+					$("#serial_num").show(200);
+				}else {
+					$("#serial_num").hide(200);
 				}
 			});
 
 			$("#add_new_item_alert").hide();
+
 			var loged_id = <?php echo $_SESSION['id'] ?>;
 			$('#row'+loged_id).remove();
+			
+			$(function () {
+			  	$('#calendar-div').calendar({
+			  		months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'Augest', 'September', 'October', 'November', 'December'],
+			  		days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+			  		color: '#198406'
+			  	});
+			});
 		});
+
+		//check inventory
+		$(function(){
+			$("#form1").on('submit', function(e2){
+				e2.preventDefault();
+
+				var check_sub_location = $("#sub_locations").val();
+				$.ajax({
+					type: 'POST',
+					url: 'check_item.php',
+					data: {check_sub_location:check_sub_location},
+					success: function(data1){
+						$("#table-content").html(data1);
+					}
+				});
+			});
+		});
+
+		$(function(){
+			
+			$("#download-pdf-btn").click(function () {
+				var doc = new jsPDF();
+				//doc.autoTable({html: '#table-content'});
+				var specialElementHandlers = {
+				    '#table-content': function (element, renderer) {
+				        return true;
+				    }
+				};
+			    doc.fromHTML($('#table-content').html(), 10, 10,{
+					'width': 110,
+					'elementHandlers': specialElementHandlers
+					});
+			    doc.save('ims.pdf');
+			});
+		});
+		
+
+		//$(function(){
+			//$("#download-pdf-btn").click(function(){
+				//var doc = new jsPDF();
+
+				//doc.fromHTML($("#table-content").html(), 10, 10);
+				//doc.save('a4.pdf');
+
+				
+			//});
+		//});
 
 		//add new item part...
 		$(function(){
@@ -77,15 +129,21 @@ session_start();
 				var main_inventory_type = $("#main_inventory_type").val();
 				var sub_inventory_type = $("#sub_inventory_type").val();
 				var inventory_code = $("#inventory_code").val();
+				if ($("#serial_num_check").prop("checked")) {
+					var serial_num = $("#serial_num").val();
+				} else {
+					var serial_num = "N/A";
+				}
 				var quantity = $("#quantity").val();
 				var price = $("#price").val();
 				var purchased_date = $("#purchased_date").val();
 				$.ajax({
 					type: 'POST',
 					url: 'add_new_item.php',
-					data: {main_location:main_location, sub_location:sub_location, main_inventory_type:main_inventory_type, sub_inventory_type:sub_inventory_type, inventory_code:inventory_code, quantity:quantity, price:price, purchased_date:purchased_date},
+					data: {main_location:main_location, sub_location:sub_location, main_inventory_type:main_inventory_type, sub_inventory_type:sub_inventory_type, inventory_code:inventory_code, serial_num:serial_num, quantity:quantity, price:price, purchased_date:purchased_date},
 					success: function(data3){
 						$("#form2")[0].reset();
+						$("#serial_num").hide(200);
 						$("#add_new_item_alert").html(data3).show();
 						$("#add_new_item_alert").fadeOut(5000);
 					}
@@ -138,13 +196,6 @@ session_start();
                 return false;
             });
         });
-		$(function () {
-		  	$('#calendar-div').calendar({
-		  		months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'Augest', 'September', 'October', 'November', 'December'],
-		  		days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-		  		color: '#198406'
-		  	});
-		});
 	</script>
 	<div id="page-header">
 		<h4>Inventory Management System</h4>
@@ -171,7 +222,6 @@ session_start();
 					?>
 				</p>
 				<a href="log_out.php" class="btn btn-danger">Log out</a>
-				
 			</div>
 			<ul class="nav nav-tabs flex-column" id="nav-tab" role="tablist">
 			  	<li class="nav-item">
@@ -180,11 +230,8 @@ session_start();
 			  	<li class="nav-item">
 			    	<a class="nav-link" id="nav-submit-tab" data-toggle="tab" href="#nav-submit" role="tab" aria-controls="profile" aria-selected="false"><i class="fas fa-plus"></i><span class="verticle-line"></span>Add Inventory</a>
 			  	</li>
-			  	<!--li class="nav-item">
-			    	<a class="nav-link" id="nav-new-tab" data-toggle="tab" href="#nav-new" role="tab" aria-controls="contact" aria-selected="false"><i class="fas fa-plus"></i><span class="verticle-line"></span>Add New Inventory</a>
-			  	</li-->
 			  	<li class="nav-item">
-			    	<a class="nav-link" id="nav-user-tab" data-toggle="tab" href="#nav-user" role="tab" aria-controls="contact" aria-selected="false"><i class="fas fa-user"></i><span class="verticle-line"></span>Manage Users</a>
+			    	<a class="nav-link" id="nav-user-tab" data-toggle="tab" href="#nav-user" role="tab" aria-controls="contact" aria-selected="false"><i class="fas fa-users"></i><span class="verticle-line"></span>Manage Users</a>
 			  	</li>
 			</ul>
 			<div id="calendar-div"></div>
@@ -202,55 +249,42 @@ session_start();
 			  	<div class="tab-pane fade show active " id="nav-check" role="tabpanel" aria-labelledby="nav-check-tab">
 			  		<div class="check-condition-div">
 			  			<form id="form1">
-							<div class="form-row" class="check-condition-div">
-							    <div class="form-group col-md-4">
-							      	<label for="inputCity">Main Location</label>
-							      	<select id="inputState" class="form-control form-control-sm">
-							        	<option selected>Choose...</option>
-							        	<option>All</option>
-							      	</select>
-							    </div>
-							    <div class="form-group col-md-4">
+							<div class="row" class="check-condition-div">
+							    <div class="form-group col-md-6">
 							      	<label for="inputState">Sub Location</label>
-							      	<select id="inputState" class="form-control form-control-sm">
+							      	<select class="form-control form-control-sm" name="sub_locations" id="sub_locations">
 							        	<option selected>Choose...</option>
-							        	<option>All</option>
+							        	<?php
+
+							    		$sql_sub_locations = "SELECT * FROM sub_locations";
+							    		$sub_loc_results = mysqli_query($conn,$sql_sub_locations);
+
+							    		while ($row = mysqli_fetch_array($sub_loc_results)) {
+							    			echo "<option value=".$row['location_code'].">(".$row['location_code'].") ". $row['location_name']."</option>";
+							    		}
+
+							    		?>
 							      	</select>
-							    </div>
-							    <div class="form-group col-md-4">
-							      	<label for="inputZip">Inventory Type</label>
-							      	<select id="inputState" class="form-control form-control-sm">
-							        	<option selected>Choose...</option>
-							        	<option>...</option>
-							      	</select>
-							    </div>
-							    <div id="check-button-div">
-							    	<button type="button" class="btn btn-success form-button"><i class="fas fa-search"></i>Check</button>
 							    </div>
 							</div>
+							<div class="button-div" id="check-button-div">
+						    	<button type="submit" class="btn btn-success btn-sm form-button" id="check_button"><i class="fas fa-search"></i>Check Inventory</button>
+						    </div>
 						</form>
 			  		</div>
-					<div class="table-content">
-						<table class="table table-bordered table-sm">
-							<thead class="thead-dark">
-								<tr>
-									<th>Inventory Code</th>
-									<th>Sub Inventory Name</th>
-									<th>Quantity</th>
-									<th>Price per item</th>
-									<th>Total</th>
-									<th>Delete</th>
-								</tr>
-							</thead>
-						</table>
+					<div id="table-content"></div>
+					<div id="editor"></div>
+					<div id="print-button-div">
+						<button class="btn btn-primary btn-sm" id="download-pdf-btn"><i class="fas fa-download"></i>Download</button>
+						<span>&nbsp&nbspDownload above inventory details table as a PDF.</span>
 					</div>
 			  	</div>
 
-			  	<!-- Submit inventory tab -->
+			<!-- Submit inventory tab -->
 			  	<div class="tab-pane fade" id="nav-submit" role="tabpanel" aria-labelledby="nav-submit-tab">
 			  		<div class="check-condition-div">
 			  			<form id="form2">
-			  				<div class="form-row" >
+			  				<div class="row" >
 							    <div class="form-group col-md-6">
 							      	<label for="inputCity">Main Location</label>
 							      	<select id="main_location" class="form-control form-control-sm" name="main_location">
@@ -284,7 +318,7 @@ session_start();
 							      	</select>
 							    </div>
 							</div>
-							<div class="form-row">
+							<div class="row">
 							    <div class="form-group col-md-6">
 							      	<label for="inputZip">Main Inventory Category</label>
 							      	<input type="text" class="form-control form-control-sm" id="main_inventory_type" name="main_inventory_type" placeholder="Main inventory category name here...">
@@ -294,73 +328,46 @@ session_start();
 							      	<input type="text" class="form-control form-control-sm" id="sub_inventory_type" placeholder="Sub inventory name here...">
 							    </div>
 							</div>
-							<div class="form-row">
-							    <div class="form-group col-md-6">
-							      	<label for="inputState">Inventory Code</label>
-							      	<input type="text" class="form-control form-control-sm" id="inventory_code" name="inventory_code" placeholder="eg:- FT/XX/XXX/XXX/XXX">
-							    </div>
-							    <div class="form-group col-md-6">
+							<div class="row">
+								<div class="form-group col-md-6">
+					    			<label for="inputState">Inventory Code</label>
+					      			<input type="text" class="form-control form-control-sm" id="inventory_code" name="inventory_code" placeholder="FT/XX/XXXX/XXX/XXX">
+					    		</div>
+					    		<div class="form-group col-md-6">
+					    			<div class="alert alert-warning" id="serial_num_check_alert">
+					    				<input class="form-check-input" type="checkbox" id="serial_num_check">
+						    			<label for="inputZip">Serial Number (Only if available)</label>
+								      	<input type="text" class="form-control form-control-sm" id="serial_num" name="serial_num" placeholder="Serial number here...">
+					    			</div>
+					    		</div>
+							</div>
+							<div class="row">
+					    		<div class="form-group col-md-3">
 							      	<label for="inputZip">Quantity</label>
 							      	<input type="text" class="form-control form-control-sm" id="quantity" name="quantity" placeholder="Quantity here...">
+					    		</div>
+							    <div class="form-group col-md-4">
+							      	<label for="inputCity">Price [Rs]</label>
+							      	<input type="text" class="form-control form-control-sm" id="price" name="price" placeholder="Price per item (eg:- XXXXX.XX)">
 							    </div>
-							</div>
-							<div class="form-row">
-							    <div class="form-group col-md-6">
-							      	<label for="inputCity">Price</label>
-							      	<input type="text" class="form-control form-control-sm" id="price" name="price" placeholder="Price per item here...">
-							    </div>
-							    <div class="form-group col-md-6">
+							    <div class="form-group col-md-5">
 							      	<label for="inputState">Purchased Date</label>
-							      	<input type="text" class="form-control form-control-sm" id="purchased_date" name="purchased_date" placeholder="Purchased date here...">
+							      	<input type="text" class="form-control form-control-sm" id="purchased_date" name="purchased_date" placeholder="DD/MM/YYYY">
 							    </div>
 							</div>
-						    <div id="check-button-div">
-						    	<button type="button" class="btn btn-success form-button" id="new_item_add_btn"><i class="fas fa-plus"></i>Add Inventory</button>
+						    <div class="button-div">
+						    	<button type="submit" class="btn btn-success btn-sm form-button" id="new_item_add_btn"><i class="fas fa-plus"></i>Add Inventory</button>
 						    </div>
 			  			</form>
 			  		</div>
 			  		<div class="alert alert-success" id="add_new_item_alert"></div>
 			  	</div>
-
-			  	<!-- Add new inventory tab -->
-			  	<!--div class="tab-pane fade" id="nav-new" role="tabpanel" aria-labelledby="nav-new-tab">
-			  		<div class="check-condition-div">
-			  			<form id="form3">
-			  				<div class="form-row">
-							    <div class="form-group col-md-12">
-							      	<label for="inputZip">Inventory Type</label>
-							      	<select class="form-control form-control-sm" id="inventory_type" name="inventory_type">
-							        	<option selected>Choose...</option>
-							        	<option value="main">Main Inventory</option>
-							        	<option value="sub">Sub Inventory</option>
-							      	</select>
-							    </div>
-							    <div class="form-group col-md-12">
-							      	<label id="sub_item_addname_label" for="inputZip"></label>
-							      	<input type="text" class="form-control form-control-sm" id="inventory_name" name="inventory_name" placeholder="Inventory name here...">
-							    </div>
-							    <div class="form-group col-md-12">
-							      	<label id="sub_item_addcode_label" for="inputZip"></label>
-							      	<input type="text" class="form-control form-control-sm" id="inventory_code" name="inventory_code" placeholder="Inventory code here...">
-							    </div>
-							    <div class="form-group col-md-12" id="add_main_item_code_div">
-							      	<label for="inputZip">Main Inventory Code</label>
-							      	<input type="text" class="form-control form-control-sm" id="main_add_inventory_code" name="main_add_inventory_code" placeholder="Inventory code here...">
-							    </div>
-							</div>
-						    <div id="check-button-div">
-						    	<button type="submit" class="btn btn-success form-button" id="new_item_add_btn"><i class="fas fa-plus"></i>Add New Inventory</button>
-						    </div>
-			  			</form>
-			  		</div>
-			  	</div-->
-
 			  	
-	<!-- User manage tab -->
+			<!-- User manage tab -->
 			  	<div class="tab-pane fade" id="nav-user" role="tabpanel" aria-labelledby="nav-user-tab">
 			  		<div class="check-condition-div">
 			  			<form id="form4">
-			  				<div class="form-row">
+			  				<div class="row">
 			  					<div class="form-group col-md-2">
 							      	<label for="inputState">Title</label>
 							      	<select id="title" class="form-control form-control-sm" name="title">
@@ -379,7 +386,7 @@ session_start();
 							      	<input type="text" class="form-control form-control-sm" id="second_name" name="second_name" placeholder="Second name here..." required>
 							    </div>
 							</div>
-							<div class="form-row">
+							<div class="row">
 							    <div class="form-group col-md-6">
 							      	<label for="inputCity">E-mail</label>
 							      	<input type="text" class="form-control form-control-sm" id="email" name="email" placeholder="E-mail address here..." required>
@@ -394,7 +401,7 @@ session_start();
 							      	</select>
 							    </div>
 							</div>
-							<div class="form-row">
+							<div class="row">
 							    <div class="form-group col-md-4">
 							      	<label for="inputCity">Username</label>
 							      	<input type="text" class="form-control form-control-sm" id="username" name="username" placeholder="Username here..." required>
@@ -408,15 +415,14 @@ session_start();
 							      	<input type="text" class="form-control form-control-sm" id="re_password" name="re_password" placeholder="Password here..." required>
 							    </div>
 							</div>
-						    <div id="check-button-div">
-						    	<button type="submit" class="btn btn-success form-button" id="user_submit_btn"><i class="fas fa-plus" onclick="return processForm();"></i>Add User</button>
+						    <div class="button-div">
+						    	<button type="submit" class="btn btn-success btn-sm form-button" id="user_submit_btn" onclick="return processForm();"><i class="fas fa-user-plus"></i>Add User</button>
 						    </div>
 			  			</form>
 			  			<div id="user-added-div"></div>
 			  		</div>
 
-	<!-- User details table -->
-
+			<!-- User details table -->
 			  		<div id="user-details">
 			  			<table class="table table-bordered table-sm table-hover" id="user_table">
 			  				<thead class="thead-dark">
@@ -443,7 +449,7 @@ session_start();
 			  						<td><?php echo $row["user_type"] ?></td>
 			  						<td>
 			  							<form id="user_delete_form">
-			  								<button class="btn btn-danger btn-sm user_del_btn" id="<?php echo $row['id']; ?>">Remove</button>
+			  								<button class="btn btn-danger btn-sm user_del_btn" id="<?php echo $row['id']; ?>"><i class="fas fa-user-times"></i>Remove</button>
 					                    </form>
 			  						</td>
 			  					</tr>
