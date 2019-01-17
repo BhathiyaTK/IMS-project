@@ -34,19 +34,35 @@ body{
 	border: 1px solid #ccced1;
 	border-radius: 10px;
 }
-.table-content{
+#table-content{
 	margin-top: 30px;
 }
 label{
 	font-weight: bold;
 	font-size: 15px;
 }
+.button-div{
+	text-align: center;
+	width: 100%;
+}
+.button-div button{
+	padding: 5px 40px;
+	font-weight: bold;
+}
 #check-button-div{
 	width: 100%;
-	text-align: center;
+	text-align: left;
 }
 #check-button-div button{
-	padding: 5px 40px;
+	padding: 5px 25px;
+	font-weight: bold
+}
+#print-button-div{
+	margin: 30px 0;
+}
+#print-button-div span{
+	font-size: 13px;
+	color: #666;
 }
 .fas{
 	padding-right: 10px;
@@ -57,6 +73,20 @@ label{
 #add_new_item_alert{
 	text-align: center;
 	margin-top: 20px;
+}
+#serial_num_check_alert{
+	padding: 3px 20px 10px 40px;
+	margin: 0;
+}
+#check-table, #check-table #del-btn{
+	text-align: center;
+}
+#check-table td{
+	text-align: left;
+}
+#check-table th, #check-table td{
+	font-size: 14px;
+	font-weight: normal;
 }
 /*//////////////////////tabs align left side/////////////////////////*/
 #nav-tab{
@@ -115,6 +145,6 @@ label{
 #user-details{
 	margin-top: 30px;
 }
-table{
+#user_table{
 	text-align: center;
 }
