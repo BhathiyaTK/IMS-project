@@ -26,20 +26,39 @@ session_start();
 	<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-	<script src="js/functions.js"></script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<script src="js/content_functions.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+	<script src="js/printThis.js"></script>
+
 	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="js/jquery.table2excel.js"></script>
+	<script src="js/xlsx.core.js"></script>
+
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/validate.js/0.12.0/validate.min.js"></script>
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/moment.min.js"></script>
-	<script src="https://unpkg.com/jspdf@1.5.3/dist/jspdf.min.js"></script>
-	<script src="https://unpkg.com/jspdf-autotable@3.0.2/dist/jspdf.plugin.autotable.js"></script>
+
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+  	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  	<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.0.2/jspdf.plugin.autotable.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/2.0.15/jspdf.plugin.autotable.src.js"></script>
+    <script src="js/html2canvas.js"></script>
 	<script src="js/tableHTMLExport.js"></script>
-	<script src="js/jquery.calendar.js"></script>
-	<link rel="stylesheet" href="css/jquery.calendar.css">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery.print/1.6.0/jQuery.print.js"></script>
+
+	<link rel="stylesheet" href="css/dcalendar.picker.css">
+	<script src="js/dcalendar.picker.js"></script>
+
 	<script src="js/script.js"></script>
 	<link rel="stylesheet" href="css/style.css">
 	
@@ -47,8 +66,9 @@ session_start();
 </head>
 <body>
 	<script type="text/javascript">
-		//document ready functions...
+		////////////////////////////////////////document ready functions//////////////////////////////////////////
 		$(document).ready(function(){
+			
 			$("#serial_num").hide();
 			$("#serial_num_check").click(function(){
 				if ($(this).prop("checked")) {
@@ -60,19 +80,36 @@ session_start();
 
 			$("#add_new_item_alert").hide();
 
-			var loged_id = <?php echo $_SESSION['id'] ?>;
-			$('#row'+loged_id).remove();
-			
-			$(function () {
-			  	$('#calendar-div').calendar({
-			  		months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'Augest', 'September', 'October', 'November', 'December'],
-			  		days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-			  		color: '#198406'
-			  	});
-			});
+			$("#calendar-div").dcalendar();
+			$("#download-pdf-btn").addClass('disabled');
+			$("#download-excel-btn").addClass('disabled');
+			$("#print-table-btn").addClass('disabled');
+			$("#users-tbl-show-div").hide();
+
+			$("#user-reg-alert").hide();
+
+			$("#form1-1-div").hide();
 		});
 
-		//check inventory
+		$( function() {
+		    $("#form2 #purchased_date").datepicker({ dateFormat: 'dd/mm/yy' });
+		});
+
+		/////////////////////////////////////check inventory functions///////////////////////////////////////////
+		//check form div visibility controls 
+		$(function(){
+			$("#search-type").click(function(){
+				var searchVal = $("#search-type").val();
+				if (searchVal == "val1") {
+					$("#form1-div").show();
+					$("#form1-1-div").hide();
+				}else if(searchVal == "val2"){
+					$("#form1-div").hide();
+					$("#form1-1-div").show();
+				}
+			});
+		});
+		//location-wise inventory check
 		$(function(){
 			$("#form1").on('submit', function(e2){
 				e2.preventDefault();
@@ -84,40 +121,66 @@ session_start();
 					data: {check_sub_location:check_sub_location},
 					success: function(data1){
 						$("#table-content").html(data1);
+						$("#download-pdf-btn").removeClass('disabled');
+						$("#download-excel-btn").removeClass('disabled');
+						$("#print-table-btn").removeClass('disabled');
 					}
 				});
 			});
 		});
-
+		//inventory-wise inventory check
 		$(function(){
-			
-			$("#download-pdf-btn").click(function () {
-				var doc = new jsPDF();
-				//doc.autoTable({html: '#table-content'});
-				var specialElementHandlers = {
-				    '#table-content': function (element, renderer) {
-				        return true;
-				    }
-				};
-			    doc.fromHTML($('#table-content').html(), 10, 10,{
-					'width': 110,
-					'elementHandlers': specialElementHandlers
-					});
-			    doc.save('ims.pdf');
+			$("#form1-1").on('submit', function(e5){
+				e5.preventDefault();
+
+				var check_inventory_wise = $("#check_inventory_item").val();
+				$.ajax({
+					type: 'POST',
+					url: 'check_item_wise.php',
+					data: {check_inventory_wise:check_inventory_wise},
+					success: function(data5){
+						$("#table-content").html(data5);
+						$("#download-pdf-btn").removeClass('disabled');
+						$("#download-excel-btn").removeClass('disabled');
+						$("#print-table-btn").removeClass('disabled');
+					}
+				});
 			});
 		});
-		
-
-		//$(function(){
-			//$("#download-pdf-btn").click(function(){
-				//var doc = new jsPDF();
-
-				//doc.fromHTML($("#table-content").html(), 10, 10);
-				//doc.save('a4.pdf');
-
-				
-			//});
-		//});
+		//check item table download function
+		$(function(){ 		
+			$("#download-pdf-btn").click(function () {
+				var doc = new jsPDF('l', 'pt', 'a4');
+				var elem = $("#table-content table").clone();
+				elem.find('tr th:nth-child(9), tr td:nth-child(9)').remove();
+    			var res = doc.autoTableHtmlToJson(elem.get(0));
+    			doc.setFontSize(15);
+    			doc.text('Technology Faculty of SUSL', 330, 40);
+    			doc.setFontSize(12);
+    			doc.text('Inventory Details Report', 360, 60);
+				doc.autoTable(res.columns, res.data,{
+					theme: 'grid',
+					margin: {top: 80, right: 25, bottom: 30, left: 25},
+					bodyStyles: {rowHeight: 20, halign: 'left'},
+					styles:{
+						tableWidth: 'auto',
+						cellWidth: 'wrap',
+						font: 'helvetica',
+						fontSize: 9.5,
+						overflow: 'linebreak',
+						halign: 'center',
+						valign: 'middle'
+					},
+					columnStyles: {
+						5: {halign: 'right'},
+						6: {halign: 'right'},
+						7: {halign: 'right'}
+					}
+				});
+				doc.save('ims.pdf');
+			    
+			});
+		});
 
 		//add new item part...
 		$(function(){
@@ -145,7 +208,6 @@ session_start();
 						$("#form2")[0].reset();
 						$("#serial_num").hide(200);
 						$("#add_new_item_alert").html(data3).show();
-						$("#add_new_item_alert").fadeOut(5000);
 					}
 				});
 			});
@@ -168,34 +230,30 @@ session_start();
 					type: 'POST',
 					url: 'add_user.php',
 					data: {title:title, first_name:first_name, second_name:second_name, email:email, userrole:userrole, username:username, password:password, re_password:re_password},
-					success: function(){
-						alert('user added successfully');
+					success: function(data4){
+						$("#users-tbl-show-div").hide();
+						$("#user-reg-alert").html(data4).show();
 						$("#form4")[0].reset();
-						$('#user_table').load("content.php #user_table");
 					}
 				});
 			});
 		});
-		$(function() {
-            $(".user_del_btn").click(function() {
-                var user_id = $(this).attr("id");
-                var info = 'id=' + user_id;
-                if (confirm("Sure you want to delete this user? This cannot be undone later.")) {
-                    $.ajax({
-                        type : "POST",
-                        url : "delete_user.php",
-                        data : info,
-                        success : function() {
-                        	$("#row"+user_id).remove();
-                        }
-                    });
-                    $(this).parents(".record").animate("fast").animate({
-                        opacity : "hide"
-                    }, "slow");
-                }
-                return false;
-            });
-        });
+		//users table show function
+		$(function(){
+			$("#show_user_button").click(function(){
+				var show_tbl_val = $(this).val();
+				$("#users-tbl-show-div").toggle(100, function(){
+					$.ajax({
+						type : "POST",
+						url : "user_details.php",
+						data : {show_tbl_val:show_tbl_val},
+						success : function(show){
+							$("#users-tbl-show-div").html(show);
+						}
+					});
+				});
+			});
+		});
 	</script>
 	<div id="page-header">
 		<h4>Inventory Management System</h4>
@@ -221,18 +279,22 @@ session_start();
 					}
 					?>
 				</p>
-				<a href="log_out.php" class="btn btn-danger">Log out</a>
+				<a href="log_out.php" class="btn btn-danger btn-sm"><b>Log out</b></a>
 			</div>
 			<ul class="nav nav-tabs flex-column" id="nav-tab" role="tablist">
-			  	<li class="nav-item">
-			    	<a class="nav-link active" id="nav-check-tab" data-toggle="tab" href="#nav-check" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-search"></i><span class="verticle-line"></span>Check Inventory</a>
-			  	</li>
-			  	<li class="nav-item">
-			    	<a class="nav-link" id="nav-submit-tab" data-toggle="tab" href="#nav-submit" role="tab" aria-controls="profile" aria-selected="false"><i class="fas fa-plus"></i><span class="verticle-line"></span>Add Inventory</a>
-			  	</li>
-			  	<li class="nav-item">
-			    	<a class="nav-link" id="nav-user-tab" data-toggle="tab" href="#nav-user" role="tab" aria-controls="contact" aria-selected="false"><i class="fas fa-users"></i><span class="verticle-line"></span>Manage Users</a>
-			  	</li>
+				<?php 
+					if (isset($_SESSION["user_type"])) {
+						if ($_SESSION["user_type"] == "admin") {
+							echo '<li class="nav-item" id="check-tab"><a class="nav-link active" id="nav-check-tab" data-toggle="tab" href="#nav-check" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-search"></i><span class="verticle-line"></span>Check Inventory</a></li>';
+							echo '<li class="nav-item" id="user-tab"><a class="nav-link" id="nav-user-tab" data-toggle="tab" href="#nav-user" role="tab" aria-controls="contact" aria-selected="false"><i class="fas fa-users"></i><span class="verticle-line"></span>Manage Users</a></li>';
+						}elseif ($_SESSION["user_type"] == "manager") {
+							echo '<li class="nav-item" id="check-tab"><a class="nav-link active" id="nav-check-tab" data-toggle="tab" href="#nav-check" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-search"></i><span class="verticle-line"></span>Check Inventory</a></li>';
+							echo '<li class="nav-item" id="add-tab"><a class="nav-link" id="nav-submit-tab" data-toggle="tab" href="#nav-submit" role="tab" aria-controls="profile" aria-selected="false"><i class="fas fa-plus"></i><span class="verticle-line"></span>Add Inventory</a></li>';
+						}elseif ($_SESSION["user_type"] == "user") {
+							echo '<li class="nav-item" id="check-tab"><a class="nav-link active" id="nav-check-tab" data-toggle="tab" href="#nav-check" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-search"></i><span class="verticle-line"></span>Check Inventory</a></li>';
+						}
+					}
+				?>
 			</ul>
 			<div id="calendar-div"></div>
 		</div>
@@ -248,35 +310,71 @@ session_start();
 			<!-- Check inventory tab -->
 			  	<div class="tab-pane fade show active " id="nav-check" role="tabpanel" aria-labelledby="nav-check-tab">
 			  		<div class="check-condition-div">
-			  			<form id="form1">
-							<div class="row" class="check-condition-div">
-							    <div class="form-group col-md-6">
-							      	<label for="inputState">Sub Location</label>
-							      	<select class="form-control form-control-sm" name="sub_locations" id="sub_locations">
-							        	<option selected>Choose...</option>
-							        	<?php
+			  			<div class="row">
+			  				<div class="col-md-5">
+			  					<label for="inputState">Select the Searching method</label>
+			  					<select class="form-control form-control-sm" name="search-type" id="search-type">
+			  						<option value="val1" selected>Sub Location wise</option>
+			  						<option value="val2">Inventory wise</option>
+			  					</select>
+			  				</div>
+			  				<div class="col-md-1">
+			  					<div class="verticle-line-check"></div>
+			  				</div>
+			  				<div class="col-md-6" id="form1-div">
+			  					<form id="form1">
+									<div class="row" class="check-condition-div">
+									    <div class="form-group col-md-12">
+									      	<label for="inputState">Sub Location</label>
+									      	<select class="form-control form-control-sm" name="sub_locations" id="sub_locations">
+									        	<option value="" selected>Choose...</option>
+									        	<?php
 
-							    		$sql_sub_locations = "SELECT * FROM sub_locations";
-							    		$sub_loc_results = mysqli_query($conn,$sql_sub_locations);
+									    		$sql_sub_locations = "SELECT * FROM sub_locations";
+									    		$sub_loc_results = mysqli_query($conn,$sql_sub_locations);
 
-							    		while ($row = mysqli_fetch_array($sub_loc_results)) {
-							    			echo "<option value=".$row['location_code'].">(".$row['location_code'].") ". $row['location_name']."</option>";
-							    		}
+									    		while ($row = mysqli_fetch_array($sub_loc_results)) {
+									    			echo "<option value=".$row['location_code'].">(".$row['location_code'].") ". $row['location_name']."</option>";
+									    		}
 
-							    		?>
-							      	</select>
+									    		?>
+									      	</select>
+									    </div>
+									</div>
+									<div class="button-div" id="check-button-div">
+								    	<button type="submit" class="btn btn-success btn-sm form-button" id="check_button"><i class="fas fa-search"></i>Check Inventory</button>
+								    </div>
+								</form>
+							    <div class="col-md-6">
+							    	<div id="check-alert-div"></div>
 							    </div>
-							</div>
-							<div class="button-div" id="check-button-div">
-						    	<button type="submit" class="btn btn-success btn-sm form-button" id="check_button"><i class="fas fa-search"></i>Check Inventory</button>
-						    </div>
-						</form>
+			  				</div>
+			  				<div class="col-md-6" id="form1-1-div">
+			  					<form id="form1-1">
+									<div class="row" class="check-condition-div">
+									    <div class="form-group col-md-12">
+									      	<label for="inputState">Inventory Name</label>
+									      	<input type="text" class="form-control form-control-sm" id="check_inventory_item" name="check_inventory_item" placeholder="Eg:- Visitor Chair">
+									    </div>
+									</div>
+									<div class="button-div" id="check-button-div">
+								    	<button type="submit" class="btn btn-success btn-sm form-button" id="check_button1"><i class="fas fa-search"></i>Check Inventory</button>
+								    </div>
+								</form>
+							    <div class="col-md-6">
+							    	<div id="check-alert-div1"></div>
+							    </div>
+			  				</div>
+			  			</div>
+			  			<div class="row">
+			  				
+			  			</div>
 			  		</div>
 					<div id="table-content"></div>
 					<div id="editor"></div>
 					<div id="print-button-div">
-						<button class="btn btn-primary btn-sm" id="download-pdf-btn"><i class="fas fa-download"></i>Download</button>
-						<span>&nbsp&nbspDownload above inventory details table as a PDF.</span>
+						<button class="btn btn-primary btn-sm" id="download-pdf-btn"><i class="fas fa-file-pdf fa-lg"></i><b>PDF</b></button>
+						<button class="btn btn-success btn-sm" id="download-excel-btn" onclick="exportTableToExcel()"><i class="fas fa-file-excel fa-lg"></i><b>EXCEL</b></button>
 					</div>
 			  	</div>
 
@@ -360,7 +458,7 @@ session_start();
 						    </div>
 			  			</form>
 			  		</div>
-			  		<div class="alert alert-success" id="add_new_item_alert"></div>
+			  		<div id="add_new_item_alert"></div>
 			  	</div>
 			  	
 			<!-- User manage tab -->
@@ -371,7 +469,7 @@ session_start();
 			  					<div class="form-group col-md-2">
 							      	<label for="inputState">Title</label>
 							      	<select id="title" class="form-control form-control-sm" name="title">
-							        	<option selected>Choose...</option>
+							        	<option value="" selected>Choose...</option>
 							        	<option value="Mr">Mr</option>
 							        	<option value="Mrs">Mrs</option>
 							        	<option value="Miss">Miss</option>
@@ -379,22 +477,22 @@ session_start();
 							    </div>
 							    <div class="form-group col-md-5">
 							      	<label for="inputState">First Name</label>
-							      	<input type="text" class="form-control form-control-sm" id="first_name" name="first_name" placeholder="First name here..." required>
+							      	<input type="text" class="form-control form-control-sm" id="first_name" name="first_name" placeholder="First name here...">
 							    </div>
 							    <div class="form-group col-md-5">
 							      	<label for="inputZip">Second Name</label>
-							      	<input type="text" class="form-control form-control-sm" id="second_name" name="second_name" placeholder="Second name here..." required>
+							      	<input type="text" class="form-control form-control-sm" id="second_name" name="second_name" placeholder="Second name here...">
 							    </div>
 							</div>
 							<div class="row">
 							    <div class="form-group col-md-6">
 							      	<label for="inputCity">E-mail</label>
-							      	<input type="text" class="form-control form-control-sm" id="email" name="email" placeholder="E-mail address here..." required>
+							      	<input type="text" class="form-control form-control-sm" id="email" name="email" placeholder="E-mail address here...">
 							    </div>
 							    <div class="form-group col-md-3">
 							      	<label for="inputState">User Role</label>
 							      	<select id="userrole" class="form-control form-control-sm" name="userrole">
-							        	<option selected>Choose...</option>
+							        	<option value="" selected>Choose...</option>
 							        	<option value="admin">Admin</option>
 							        	<option value="manager">Manager</option>
 							        	<option value="user">User</option>
@@ -404,65 +502,72 @@ session_start();
 							<div class="row">
 							    <div class="form-group col-md-4">
 							      	<label for="inputCity">Username</label>
-							      	<input type="text" class="form-control form-control-sm" id="username" name="username" placeholder="Username here..." required>
+							      	<input type="text" class="form-control form-control-sm" id="username" name="username" placeholder="Username here...">
 							    </div>
 							    <div class="form-group col-md-4">
 							      	<label for="inputCity">Password</label>
-							      	<input type="text" class="form-control form-control-sm" id="password" name="password" placeholder="Password here..." required>
+							      	<input type="password" class="form-control form-control-sm" id="password" name="password" placeholder="Password here...">
 							    </div>
 							    <div class="form-group col-md-4">
-							      	<label for="inputCity">Re-enter Password</label>
-							      	<input type="text" class="form-control form-control-sm" id="re_password" name="re_password" placeholder="Password here..." required>
+							      	<label for="inputCity">Confirm Password</label>
+							      	<input type="password" class="form-control form-control-sm" id="re_password" name="re_password" placeholder="Re-enteer password here...">
 							    </div>
 							</div>
 						    <div class="button-div">
-						    	<button type="submit" class="btn btn-success btn-sm form-button" id="user_submit_btn" onclick="return processForm();"><i class="fas fa-user-plus"></i>Add User</button>
+						    	<button type="submit" class="btn btn-success btn-sm form-button" id="user_submit_btn"><i class="fas fa-user-plus"></i>Add User</button>
 						    </div>
 			  			</form>
-			  			<div id="user-added-div"></div>
 			  		</div>
+			  		<div id="user-reg-alert"></div>
 
 			<!-- User details table -->
 			  		<div id="user-details">
-			  			<table class="table table-bordered table-sm table-hover" id="user_table">
-			  				<thead class="thead-dark">
-			  					<tr>
-			  						<th scope="col">Title</th>
-			  						<th scope="col">Name</th>
-			  						<th scope="col">E-mail</th>
-			  						<th scope="col">User Role</th>
-			  						<th scope="col">Action</th>
-			  					</tr>
-			  				</thead>
-			  				<tbody class="">
-			  				<?php 
-
-			  					$sql_users = "SELECT * FROM users";
-			  					$sql_users_result = mysqli_query($conn,$sql_users);
-
-			  					while ($row = mysqli_fetch_array($sql_users_result)) {
-			  				?>
-			  					<tr id="row<?php echo $row['id']; ?>">
-			  						<td><?php echo $row["title"]; ?></td>
-			  						<td><?php echo $row["first_name"]." ".$row["second_name"] ?></td>
-			  						<td><?php echo $row["email"] ?></td>
-			  						<td><?php echo $row["user_type"] ?></td>
-			  						<td>
-			  							<form id="user_delete_form">
-			  								<button class="btn btn-danger btn-sm user_del_btn" id="<?php echo $row['id']; ?>"><i class="fas fa-user-times"></i>Remove</button>
-					                    </form>
-			  						</td>
-			  					</tr>
-			  				<?php				
-			  					}
-
-			  				?>
-			  				</tbody>
-			  			</table>
+			  			<button type="submit" class="btn btn-warning btn-sm form-button" id="show_user_button">Show/Hide Users</button>
+			  			<div id="users-tbl-show-div"></div>
 			  		</div>
 			  	</div>
 			</div>
 		</div>
 	</div>
+	<script>
+		/*$(function(){
+			$("#download-excel-btn").click(function () {
+				var htmltable= document.getElementById('check-table');
+			    var html = htmltable.outerHTML;
+			    window.open('data:application/vnd.ms-excel,' + encodeURIComponent(html));
+				//$("#check-table").table2excel();
+			});
+		});*/
+		function exportTableToExcel(tableID, filename = ''){
+		    var downloadLink;
+		    var dataType = 'application/vnd.ms-excel';
+		    var tableSelect = document.getElementById('check-table');
+		    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+		    
+		    // Specify file name
+		    filename = filename?filename+'.xls':'ims.xls';
+		    
+		    // Create download link element
+		    downloadLink = document.createElement("a");
+		    
+		    document.body.appendChild(downloadLink);
+		    
+		    if(navigator.msSaveOrOpenBlob){
+		        var blob = new Blob(['\ufeff', tableHTML], {
+		            type: dataType
+		        });
+		        navigator.msSaveOrOpenBlob( blob, filename);
+		    }else{
+		        // Create a link to the file
+		        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+		    
+		        // Setting the file name
+		        downloadLink.download = filename;
+		        
+		        //triggering the function
+		        downloadLink.click();
+		    }
+		}
+	</script>
 </body>
 </html>
