@@ -102,8 +102,10 @@ session_start();
 				var searchVal = $("#search-type").val();
 				if (searchVal == "val1") {
 					$("#form1-div").show();
+					$("#form1-1")[0].reset();
 					$("#form1-1-div").hide();
 				}else if(searchVal == "val2"){
+					$("#form1")[0].reset();
 					$("#form1-div").hide();
 					$("#form1-1-div").show();
 				}
@@ -150,6 +152,9 @@ session_start();
 		//check item table download function
 		$(function(){ 		
 			$("#download-pdf-btn").click(function () {
+				var oc = $("#sub_locations").val();
+				var ac = $("#check_inventory_item").val();
+				
 				var doc = new jsPDF('l', 'pt', 'a4');
 				var elem = $("#table-content table").clone();
 				elem.find('tr th:nth-child(9), tr td:nth-child(9)').remove();
@@ -158,9 +163,18 @@ session_start();
     			doc.text('Technology Faculty of SUSL', 330, 40);
     			doc.setFontSize(12);
     			doc.text('Inventory Details Report', 360, 60);
+    			if (oc !== '') {
+    				doc.setFontSize(11);
+    				doc.text('Location : '+oc, 25, 80);
+    			}
+    			else if(ac !== '') {
+    				doc.setFontSize(11);
+    				doc.text('Inventory Name : '+ac, 25, 80);
+    			}
+    			
 				doc.autoTable(res.columns, res.data,{
 					theme: 'grid',
-					margin: {top: 80, right: 25, bottom: 30, left: 25},
+					margin: {top: 90, right: 25, bottom: 30, left: 25},
 					bodyStyles: {rowHeight: 20, halign: 'left'},
 					styles:{
 						tableWidth: 'auto',
@@ -553,10 +567,8 @@ session_start();
 		    document.body.appendChild(downloadLink);
 		    
 		    if(navigator.msSaveOrOpenBlob){
-		        var blob = new Blob(['\ufeff', tableHTML], {
-		            type: dataType
-		        });
-		        navigator.msSaveOrOpenBlob( blob, filename);
+		        var blob = new Blob(['\ufeff', tableHTML], {type: dataType});
+		        navigator.msSaveOrOpenBlob(blob, filename);
 		    }else{
 		        // Create a link to the file
 		        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
