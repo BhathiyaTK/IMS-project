@@ -69,6 +69,22 @@ session_start();
 		////////////////////////////////////////document ready functions//////////////////////////////////////////
 		$(document).ready(function(){
 			
+			$(".check-condition-div-1").hide();
+			$("#item_status_check").click(function(){
+				if ($(this).prop("checked")) {
+					$(".check-condition-div-1").show(200);
+				}else {
+					$(".check-condition-div-1").hide(200);
+				}
+			});
+			$(".check-condition-div-2").hide();
+			$("#item_status_update_check").click(function(){
+				if ($(this).prop("checked")) {
+					$(".check-condition-div-2").show(200);
+				}else {
+					$(".check-condition-div-2").hide(200);
+				}
+			});
 			$("#serial_num").hide();
 			$("#serial_num_check").click(function(){
 				if ($(this).prop("checked")) {
@@ -84,6 +100,7 @@ session_start();
 			$("#download-pdf-btn").addClass('disabled');
 			$("#download-excel-btn").addClass('disabled');
 			$("#print-table-btn").addClass('disabled');
+			$("#refresh-btn").addClass('disabled');
 			$("#users-tbl-show-div").hide();
 
 			$("#user-reg-alert").hide();
@@ -126,6 +143,7 @@ session_start();
 						$("#download-pdf-btn").removeClass('disabled');
 						$("#download-excel-btn").removeClass('disabled');
 						$("#print-table-btn").removeClass('disabled');
+						$("#refresh-btn").removeClass('disabled');
 					}
 				});
 			});
@@ -145,6 +163,45 @@ session_start();
 						$("#download-pdf-btn").removeClass('disabled');
 						$("#download-excel-btn").removeClass('disabled');
 						$("#print-table-btn").removeClass('disabled');
+						$("#refresh-btn").removeClass('disabled');
+					}
+				});
+			});
+		});
+		//add inventory status 
+		$(function(){
+			$("#form_status").on('submit',function(e7){
+				e7.preventDefault();
+
+				var status_location = $("#status_locations").val();
+				var status_item_name = $("#status_item_name").val();
+				var status_item_code = $("#status_item_code").val();
+				var item_status = $("#item_status").val();
+				$.ajax({
+					type: 'POST',
+					url: 'status.php',
+					data: {status_location:status_location,status_item_name:status_item_name,status_item_code:status_item_code,item_status:item_status},
+					success: function(data7){
+						$("#form_status")[0].reset();
+						$("#status-alert-div").html(data7).show();
+					}
+				});
+			});
+		});
+		//update inventory status
+		$(function(){
+			$("#form_status_update").on('submit',function(e8){
+				e8.preventDefault();
+
+				var update_status_code = $("#update_status_code").val();
+				var update_status = $("#update_status").val();
+				$.ajax({
+					type: 'POST',
+					url: 'update_status.php',
+					data: {update_status_code:update_status_code,update_status:update_status},
+					success: function(data8){
+						$("#form_status_update")[0].reset();
+						$("#status-update-alert-div").html(data8).show();
 					}
 				});
 			});
@@ -157,7 +214,7 @@ session_start();
 				
 				var doc = new jsPDF('l', 'pt', 'a4');
 				var elem = $("#table-content table").clone();
-				elem.find('tr th:nth-child(9), tr td:nth-child(9)').remove();
+				elem.find('tr th:nth-child(10), tr td:nth-child(10)').remove();
     			var res = doc.autoTableHtmlToJson(elem.get(0));
     			doc.setFontSize(15);
     			doc.text('Technology Faculty of SUSL', 330, 40);
@@ -214,10 +271,11 @@ session_start();
 				var quantity = $("#quantity").val();
 				var price = $("#price").val();
 				var purchased_date = $("#purchased_date").val();
+				var inventory_status = $("#inventory_status").val();
 				$.ajax({
 					type: 'POST',
 					url: 'add_new_item.php',
-					data: {main_location:main_location, sub_location:sub_location, main_inventory_type:main_inventory_type, sub_inventory_type:sub_inventory_type, inventory_code:inventory_code, serial_num:serial_num, quantity:quantity, price:price, purchased_date:purchased_date},
+					data: {main_location:main_location, sub_location:sub_location, main_inventory_type:main_inventory_type, sub_inventory_type:sub_inventory_type, inventory_code:inventory_code, serial_num:serial_num, quantity:quantity, price:price, purchased_date:purchased_date,inventory_status:inventory_status},
 					success: function(data3){
 						$("#form2")[0].reset();
 						$("#serial_num").hide(200);
@@ -273,7 +331,7 @@ session_start();
 		<h4>Inventory Management System</h4>
 	</div>
 	<div class="content-div row">
-		<div class="col-md-3"> 
+		<div class="col-md-3" id="side-panel"> 
 			<div id="logout-div">
 				<?php if(isset($_SESSION["username"])){ ?>
 					<h4><?php echo "Hello! ".$_SESSION["username"]; ?></h4>
@@ -380,15 +438,43 @@ session_start();
 							    </div>
 			  				</div>
 			  			</div>
-			  			<div class="row">
-			  				
-			  			</div>
 			  		</div>
 					<div id="table-content"></div>
 					<div id="editor"></div>
 					<div id="print-button-div">
 						<button class="btn btn-primary btn-sm" id="download-pdf-btn"><i class="fas fa-file-pdf fa-lg"></i><b>PDF</b></button>
 						<button class="btn btn-success btn-sm" id="download-excel-btn" onclick="exportTableToExcel()"><i class="fas fa-file-excel fa-lg"></i><b>EXCEL</b></button>
+					</div>
+
+					<hr><br>
+
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group col-md-12">
+				    			<div id="">
+				    				<input class="form-check-input" type="checkbox" id="item_status_update_check">
+					    			<label for="inputZip">Update inventory status</label>
+				    			</div>
+				    		</div>
+  							<div class="col-md-12  check-condition-div-2">
+  								<div id="status-update-alert-div"></div>
+	  								<form id="form_status_update">
+	  									<div class="row">
+										<div class="form-group col-md-7">
+											<label for="inputState">Inventory Code</label>
+		  									<input type="text" class="form-control form-control-sm" id="update_status_code" name="update_status_code" placeholder="Enter inventory code here...">
+										</div>
+									    <div class="form-group col-md-5">
+									      	<label for="inputState">Status</label>
+									      	<input type="text" class="form-control form-control-sm" id="update_status" name="update_status" placeholder="Enter inventory status here...">
+									    </div>
+									</div>
+									<div class="button-div" id="check-button-div">
+								    	<button type="submit" class="btn btn-success btn-sm form-button" id="update_status_button"><i class="fas fa-edit"></i>Update Status</button>
+								    </div>
+  								</form>
+  							</div>
+						</div>
 					</div>
 			  	</div>
 
@@ -466,6 +552,12 @@ session_start();
 							      	<label for="inputState">Purchased Date</label>
 							      	<input type="text" class="form-control form-control-sm" id="purchased_date" name="purchased_date" placeholder="DD/MM/YYYY">
 							    </div>
+							</div>
+							<div class="row" id="status-row">
+								<div class="form-group col-md-3">
+									<label for="inputZip">Status</label>
+							      	<input type="text" class="form-control form-control-sm" id="inventory_status" name="inventory_status" placeholder="Status here...">
+								</div>
 							</div>
 						    <div class="button-div">
 						    	<button type="submit" class="btn btn-success btn-sm form-button" id="new_item_add_btn"><i class="fas fa-plus"></i>Add Inventory</button>
