@@ -16,7 +16,7 @@ body{
 	margin: 0 auto;
 }
 #nav-tabContent{
-	width: 90%;
+	width: 95%;
 	margin: 30px auto;
 }
 .nav-link{
@@ -34,6 +34,16 @@ body{
 	border: 1px solid #ccced1;
 	border-radius: 10px;
 	background-color: #f2f2f2;
+}
+.check-condition-div-1, .check-condition-div-2{
+	width: 100%;
+	padding: 13px 20px 20px 20px;
+	border: 1px solid #ccced1;
+	border-radius: 10px;
+	background-color: #f2f2f2;
+}
+.check-condition-div-1 .status-content, .check-condition-div-2 .status-content{
+	width: 100%;
 }
 #table-content{
 	margin-top: 30px;
@@ -74,6 +84,9 @@ label{
 	font-size: 13px;
 	color: #666;
 }
+#print-button-div #refresh-btn{
+	float: right;
+}
 .fas, .far{
 	padding-right: 10px;
 }
@@ -109,6 +122,13 @@ label{
 	margin: 0 auto;
 	height: 100%;
 	border-left: 3px solid #ddd;
+}
+#status-alert-div{
+	width: 100%;
+	margin: 10px 0 0 0;
+}
+#status-row{
+	display: none;
 }
 /*//////////////////////tabs align left side/////////////////////////*/
 #nav-tab{
