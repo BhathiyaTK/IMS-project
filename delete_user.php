@@ -11,8 +11,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-session_start();
-
 $user_del_info = $_POST["id"];
 
 $sql = "DELETE FROM users WHERE id=$user_del_info";
