@@ -61,6 +61,7 @@ if ($inventory_wise == "") {
 					<th>Price per item</th>
 					<th>Total Price</th>
 					<th>Purchased Date</th>
+					<th>Status</th>
 					<th>Action</th>
 				</tr>
 			</thead>
@@ -78,6 +79,7 @@ if ($inventory_wise == "") {
 					<td class="right-align-td"><?php $totol = $row["quantity"]*$row["price"];
 							echo "Rs. ".number_format((float)$totol,2,'.',''); ?></td>
 					<td class="right-align-td"><?php echo $row["purchased_date"] ?></td>
+					<td><?php echo $row["status"]; ?></td>
 					<td class="del-btn">
 						<form id="item_delete_form">
 							<button class="btn btn-danger btn-sm item_del_btn" id="<?php echo $row['id']; ?>"><i class="far fa-trash-alt"></i></button>
