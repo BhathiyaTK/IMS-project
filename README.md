@@ -3,4 +3,4 @@ This is a web based Inventory Management System for a Faculty of my university. 
 
 For develop this system I used **HTML5**, **CSS3**, **Bootstrap v4.2.1**, **JQuery**, **AJAX**, **PHP** and **MySQL**.:computer:
 
-> *This is a fully completed project and now this project is on air.*:sunglasses:
+> *This is a successfully completed project and now this project is on air.*:sunglasses:
