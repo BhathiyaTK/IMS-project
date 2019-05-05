@@ -1,0 +1,213 @@
+.se-pre-con {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+	background: url(../images/loader.gif) center no-repeat #fff;
+}
+*{
+	font-size: 14px;
+	color: #fff;
+}
+body{
+	width: 100%;
+	background-image: url(../images/sabra-tech-faculty.jpg);
+	background-position: bottom center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+#page-header{
+	text-align: center;
+	background-color: #c21e56;
+	box-shadow: 0 6px 8px 4px rgba(0, 0, 0, 0.2), 0 6px 20px 4px rgba(0, 0, 0, 0.19);
+}
+#page-header h1{
+	padding: 10px 0;
+	color: #fff;
+	font-family: Roboto;
+}
+#page-header h4{
+	padding: 13px 0;
+	background-color: #1ec28a;
+}
+.home-page-title{
+	text-align: center;
+	color: #fff;
+}
+.home-page-title h4{
+	padding-top: 30px;
+	text-shadow: 5px 5px 15px #000;
+	margin-bottom: 20px;
+	letter-spacing: .5px;
+	font-weight: bold;
+}
+.login-section-background{
+	height: 100vh;
+	background-image: linear-gradient(to top,rgba(0,0,0,0.6),rgba(0,0,0,0));
+}
+.login-section-background #login-header{
+	font-family: Nunito;
+	text-align: center;
+	text-transform: uppercase;
+	word-spacing: 4px;
+	letter-spacing: 1px;
+	border-bottom: 3px solid #1ec28a;
+	border-radius: 20px;
+}
+.login-section-background #form-div{
+	width: 34%;
+	height: 50%;
+	margin: 50px auto;
+	padding: 35px 40px 30px 40px;
+	border-radius: 15px;
+	background-color: rgba(0,0,0,0.9);
+	box-shadow: 0 6px 8px 4px rgba(0, 0, 0, 0.2), 0 6px 20px 4px rgba(0, 0, 0, 0.19);
+}
+.login-section-background #form-div form{
+	margin-top: 45px;
+}
+.login-section-background #form-div form #inputs-set{
+	padding: 0 30px 0 0px;
+	margin-top: 10px;
+}
+.login-section-background #form-div form .label-titles{
+	font-size: 15px;
+	font-weight: bold;
+	color: #0cb4ce;
+	opacity: 1;
+}
+#index-log-divider{
+	margin-top: 10px;
+	border-top: 1px solid #333;
+}
+#login-button-div{
+	margin-top: 10px;
+	text-align: center;
+	padding-top: 15px;
+}
+#login-button-div button{
+	font-weight: bold;
+	font-size: 15px;
+}
+#login-button-div .btn{
+	padding: 8px 80px;
+	border-radius: 20px;
+}
+.fas{
+	padding-left: 10px;
+	color: red;
+}
+#log-in-btn{
+	font-weight: bold;
+	font-size: 15px;
+}
+form .input-fields{
+	margin-top: 5px;
+}
+form .label_div label{
+	float: right;
+}
+.fas, .far{
+	padding-right: 10px;
+	color: red;
+}
+#login_alert{
+	margin-top: 20px;
+	color: red;
+	text-align: center;
+}
+
+.developer-title{
+	display: flex;
+	padding-bottom: 30px;
+	text-align: center;
+	font-family: Nunito;
+	letter-spacing: 0.8px;
+	font-weight: bold;
+}
+.developer-title span{
+	font-weight: normal;
+}
+.developer-title #title1{
+	padding-right: 30px;
+	width: 39.5%;
+}
+.developer-title #title2{
+	border-left: 4px solid #ddd;
+	padding-top: 10px;
+	padding-left: 15px;
+	width: 30%;
+}
+.developer-title #title1 img{
+	width: 16%;
+	float: right;
+}
+#userrole_select option{
+	color: #000 !important;
+	-ms-color: #000 !important;
+}
+
+@media(max-width: 700px){
+	.login-section-background{
+		height: 100%;
+	}
+	.login-section-background #form-div{
+		width: 90%;
+		height: 75%;
+		padding: 35px 30px 30px 30px;
+	}
+
+	.login-section-background #form-div form{
+		margin-top: 30px;
+	}
+	.login-section-background #form-div form #inputs-set{
+		padding: 0;
+		margin-top: 0px;
+	}	
+	.login-section-background #form-div form .label-titles{
+		font-size: 15px;
+		font-weight: bold;
+	}
+	form .label_div label{
+		float: none;
+	}
+	.developer-title{
+		display: block;
+	}
+	.developer-title #title1{
+		padding-right: 0px;
+		width: 100%;
+	}
+	.developer-title #title1 img{
+		width: 40%;
+		float: none;
+	}
+	.developer-title #title2{
+		text-align: center;
+		border-left: none;
+		padding-right: 15px;
+		width: 100%;
+	}
+}
+
+/*///////////////form validation index//////////*/
+input:not([type="file"]).error,
+select.error {
+  border: 1px solid #f43f45 !important;
+}
+ 
+input:not([type="file"]).no-error,
+select.no-error {
+  border: 1px solid green !important;
+}
+form .error {
+  color: #f43f45;
+  font-size: small;
+}
+form .no-error{
+	color: green;
+	font-size: small;
+}
