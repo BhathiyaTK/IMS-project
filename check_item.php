@@ -28,16 +28,7 @@
 
 <?php
 
-$host="localhost";
-$db_name="root";
-$db_pass= "";
-$db="tech";
-
-$conn = new mysqli($host,$db_name,$db_pass,$db);
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once 'db.php';
 
 session_start();
 
@@ -67,7 +58,7 @@ if ($check_sub_loc == "") {
 						<th>Status</th>
 						<?php
 							if (isset($_SESSION["user_type"])) {
-								if ($_SESSION["user_type"] == "admin") {
+								if (($_SESSION["user_type"] == "admin")||($_SESSION["user_type"] == "super_admin")) {
 						?>
 						<th>Action</th>
 						<?php
@@ -97,7 +88,7 @@ if ($check_sub_loc == "") {
 						<td><?php echo $row["status"]; ?></td>
 						<?php 
 							if (isset($_SESSION["user_type"])) {
-								if ($_SESSION["user_type"] == "admin") {
+								if (($_SESSION["user_type"] == "admin")) {
 						?>	
 						<td class="del-btn">
 							<form id="item_delete_form">
@@ -105,12 +96,25 @@ if ($check_sub_loc == "") {
 		                	</form>
 						</td>
 						<?php
-								}elseif($_SESSION["user_type"] == "manager"){
+								}elseif(($_SESSION["user_type"] == "manager")){
 						?>	
 						<td class="edit-btn">
 							<form id="item_edit_form">
 								<button type="button" class="btn btn-info btn-sm item_edit_btn" id="<?php echo $row['id']; ?>" data-toggle="modal" data-target="#manager_edit_modal" onclick="editNow(<?php echo $row['id']; ?>)"><i class="fas fa-pen-alt edit_icon"></i></button>
 		                	</form>
+						</td>
+						<?php
+								}elseif (($_SESSION["user_type"] == "super_admin")) {
+						?>
+						<td class="del-btn edit-btn">
+							<div id="main_loc_action_td">
+								<form id="item_delete_form" style="padding-right: 5px;">
+									<button type="button" class="btn btn-danger btn-sm item_del_btn" id="<?php echo $row['id']; ?>" data-toggle="modal" data-target="#confirm_del_modal" onclick="deleteNow(<?php echo $row['id']; ?>)"><i class="far fa-trash-alt delete_icon"></i></button>
+			                	</form>
+			                	<form id="item_edit_form" style="padding-right: 5px;">
+									<button type="button" class="btn btn-info btn-sm item_edit_btn" id="<?php echo $row['id']; ?>" data-toggle="modal" data-target="#manager_edit_modal" onclick="editNow(<?php echo $row['id']; ?>)"><i class="fas fa-pen-alt edit_icon"></i></button>
+			                	</form>
+							</div>
 						</td>
 						<?php
 								}
@@ -175,11 +179,11 @@ if ($check_sub_loc == "") {
 						<th>Status</th>
 						<?php
 							if (isset($_SESSION["user_type"])) {
-								if ($_SESSION["user_type"] == "admin") {
+								if (($_SESSION["user_type"] == "admin")||($_SESSION["user_type"] == "super_admin")) {
 						?>
 						<th>Action</th>
 						<?php
-								}elseif($_SESSION["user_type"] == "manager") {
+								}elseif(($_SESSION["user_type"] == "manager")){
 						?>
 						<th>Edit</th>
 						<?php
@@ -205,7 +209,7 @@ if ($check_sub_loc == "") {
 						<td><?php echo $row["status"]; ?></td>
 						<?php 
 							if (isset($_SESSION["user_type"])) {
-								if ($_SESSION["user_type"] == "admin") {
+								if (($_SESSION["user_type"] == "admin")) {
 						?>	
 						<td class="del-btn">
 							<form id="item_delete_form">
@@ -213,12 +217,25 @@ if ($check_sub_loc == "") {
 		                	</form>
 						</td>
 						<?php
-								}elseif($_SESSION["user_type"] == "manager"){
+								}elseif(($_SESSION["user_type"] == "manager")){
 						?>	
 						<td class="edit-btn">
 							<form id="item_edit_form">
 								<button type="button" class="btn btn-info btn-sm item_edit_btn" id="<?php echo $row['id']; ?>" data-toggle="modal" data-target="#manager_edit_modal" onclick="editNow(<?php echo $row['id']; ?>)"><i class="fas fa-pen-alt edit_icon"></i></button>
 		                	</form>
+						</td>
+						<?php
+								}elseif (($_SESSION["user_type"] == "super_admin")) {
+						?>
+						<td class="del-btn edit-btn">
+							<div id="main_loc_action_td">
+								<form id="item_delete_form" style="padding-right: 5px;">
+									<button type="button" class="btn btn-danger btn-sm item_del_btn" id="<?php echo $row['id']; ?>" data-toggle="modal" data-target="#confirm_del_modal" onclick="deleteNow(<?php echo $row['id']; ?>)"><i class="far fa-trash-alt delete_icon"></i></button>
+			                	</form>
+			                	<form id="item_edit_form" style="padding-right: 5px;">
+									<button type="button" class="btn btn-info btn-sm item_edit_btn" id="<?php echo $row['id']; ?>" data-toggle="modal" data-target="#manager_edit_modal" onclick="editNow(<?php echo $row['id']; ?>)"><i class="fas fa-pen-alt edit_icon"></i></button>
+			                	</form>
+							</div>
 						</td>
 						<?php
 								}

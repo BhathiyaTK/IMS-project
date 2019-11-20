@@ -1,15 +1,6 @@
 <?php
 
-$host="localhost";
-$db_name="root";
-$db_pass= "";
-$db="tech";
-
-$conn = new mysqli($host,$db_name,$db_pass,$db);
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once 'db.php';
 
 session_start();
 
@@ -27,22 +18,22 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<link rel="stylesheet" type="text/css" href="css/content-style.css">
+	<link rel="stylesheet" type="text/css" href="css/dark-style.css">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-	<link href="https://fonts.googleapis.com/css?family=Roboto:100" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Roboto:700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,900&display=swap" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
 	<script src="js/content_functions.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 	<script src="js/printThis.js"></script>
 
 	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 	<script src="js/jquery.table2excel.js"></script>
 	<script src="js/xlsx.core.js"></script>
 
@@ -64,6 +55,18 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery.print/1.6.0/jQuery.print.js"></script>
 
+	<!-- Import chart.js via CDN -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"/>
+	<script src="js/chartjs-plugin-labels.js"></script>
+
+	<!-- Import D3 Scale Chromatic via CDN -->
+  	<script src="https://d3js.org/d3-color.v1.min.js"></script>
+  	<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+  	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+	<!-- <script src="js/canvasjs.min.js"></script> -->
+
 	<link rel="stylesheet" href="css/dcalendar.picker.css">
 	<script src="js/dcalendar.picker.js"></script>
 
@@ -71,6 +74,8 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 	<link rel="stylesheet" href="css/style.css">
 	
 	<title>IMS | Home</title>
+
+	<link rel="icon" href="images/susl.png">
 </head>
 <body>
 	<script type="text/javascript">
@@ -78,8 +83,24 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 		$(window).on("load", function() {
 			$(".se-pre-con").fadeOut("slow");
 		});
+
 		////////////////////////////////////////document ready functions//////////////////////////////////////////
 		$(document).ready(function(){
+
+			function loadGraphs(){
+				var load = "websiteloading";
+
+				$.ajax({
+					type: "POST",
+					url: "graphs.php",
+					data: {load:load},
+					success: function(graphs){
+						$("#graphs-section").html(graphs);
+					}
+				});
+			}
+
+			loadGraphs();
 
 			$.fn.digits = function(){ 
 			    return this.each(function(){ 
@@ -87,6 +108,45 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 			    })
 			}
 			$(".numbers").digits();
+
+			function settingsLoad(){
+				var side_panel = localStorage.getItem('side-panel');
+				var user_profile = localStorage.getItem('user_profile');
+				var profile_image = localStorage.getItem('profile_image');
+				var side_panel_icons = localStorage.getItem('side-panel-icons');
+				var logout_div = localStorage.getItem('logout-div');
+				var side_panel_divider = localStorage.getItem('side-panel-divider');
+				var side_panel_divider1 = localStorage.getItem('side-panel-divider1');
+				var page_header = localStorage.getItem('page-header');
+				var toggle_btn = localStorage.getItem('toggle-btn');
+				var toggle_en_btn = JSON.parse(localStorage.getItem('toggle-en-btn'));
+				var page_header_title = localStorage.getItem('header_text');
+				var title_hide_btn = JSON.parse(localStorage.getItem('title-hide-btn'));
+				if (localStorage.getItem('side_panel_class') === 'true') {
+					$("#side-panel").addClass('side-panel0');
+				}
+				if (localStorage.getItem('main_content_class') === 'true') {
+					$("#main-content-panel").addClass('main-content-panel100');
+				}
+				if (localStorage.getItem('toggle_btn_left') === 'true') {
+					$("#side_panel_toggler").addClass('side_panel_t0');
+				}
+
+				$("#side-panel").css("background-color",side_panel);
+				$("#user_profile").css({'background-color':user_profile,'border-color':user_profile});
+				$("#user_profile .profile_image").css("background-color",profile_image);
+				$(".side-panel-icons div").css("border-color",side_panel_icons);
+				$("#logout-div p").css("color",logout_div);
+				$(".side-panel-divider").css("border-color",side_panel_divider);
+				$(".side-panel-divider1").css("border-color",side_panel_divider1);
+				$("#page-header h3").css("background-color",page_header);
+				$("#side_panel_toggler").css('display',toggle_btn);
+				$("#toggle-en-btn").attr('checked',toggle_en_btn);
+				$("#page-header h3").css('display',page_header_title);
+				$("#title-hide-btn").attr('checked',title_hide_btn);
+			}
+
+			settingsLoad();
 
 			$(".item_del_btn").click(function(){
 				$('#confirm_del_modal').modal('show');
@@ -106,9 +166,9 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 			});
 			$("#update_status_check_btn").click(function(){
 				if ($(this).prop("checked")) {
-					$(".check-condition-div-2").show(100);
+					$(".check-condition-div-2").show();
 				}else {
-					$(".check-condition-div-2").hide(100);
+					$(".check-condition-div-2").hide();
 				}
 			});
 			$("#serial_num").hide();
@@ -119,14 +179,45 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 					$("#serial_num").hide(100);
 				}
 			});
+			$("#toggle-en-btn").click(function(){
+				if ($(this).prop("checked")) {
+					$("#side_panel_toggler").css('display','block');
+					localStorage.setItem('toggle-btn','block');
+					localStorage.setItem('toggle-en-btn','true');
+				}else{
+					$("#side_panel_toggler").css('display','none');
+					localStorage.setItem('toggle-btn','none');
+					localStorage.setItem('toggle-en-btn','false');
+				}
+			});
+			$("#title-hide-btn").click(function(){
+				if ($(this).prop("checked")) {
+					$("#page-header h3").css('display','none');
+					localStorage.setItem('header_text','none');
+					localStorage.setItem('title-hide-btn','true');
+				}else{
+					$("#page-header h3").css('display','block');
+					localStorage.setItem('header_text','block');
+					localStorage.setItem('title-hide-btn','false');
+				}
+			});
+			$("#side_panel_toggler").click(function(){
+				loadGraphs();
+				$("#side-panel").toggleClass('side-panel0');
+				$("#main-content-panel").toggleClass('main-content-panel100');
+				$("#side_panel_toggler").toggleClass('side_panel_t0');
+				localStorage.setItem('side_panel_class',$("#side-panel").hasClass('side-panel0'));
+				localStorage.setItem('main_content_class',$("#main-content-panel").hasClass('main-content-panel100'));
+				localStorage.setItem('toggle_btn_left',$("#side_panel_toggler").hasClass('side_panel_t0'));
+			});
 
 			$("#add_new_item_alert").hide();
 
 			$("#calendar-div").dcalendar();
-			$("#download-pdf-btn").addClass('disabled');
-			$("#download-excel-btn").addClass('disabled');
-			$("#print-table-btn").addClass('disabled');
-			$("#refresh-btn").addClass('disabled');
+			$("#download-pdf-btn").hide();
+			$("#download-excel-btn").hide();
+			$("#print-table-btn").hide();
+			$("#refresh-btn").hide();
 			$("#users-tbl-show-div").hide();
 
 			$("#user-reg-alert").hide();
@@ -135,6 +226,126 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 			$("#form1-1-div").hide();
 
 			$("#form-loc-div2").hide();
+
+			////////////// Setting color changes \\\\\\\\\\\\\\\
+			$("#color1").click(function(){
+				$("#side-panel").css("background-color","#212733");
+				$("#user_profile").css({'background-color':'#4c4d4f','border-color':'#4c4d4f'});
+				$("#user_profile .profile_image").css("background-color","#212733");
+				$(".side-panel-icons div").css("border-color","#4c4d4f");
+				$("#logout-div p").css("color","#0ecc14");
+				$(".side-panel-divider").css("border-color","#2F4F4F");
+				$(".side-panel-divider1").css("border-color","#2F4F4F");
+				localStorage.setItem('side-panel','#212733');
+				localStorage.setItem('user_profile','#4c4d4f');
+				localStorage.setItem('profile_image','#212733');
+				localStorage.setItem('side-panel-icons','#4c4d4f');
+				localStorage.setItem('logout-div','#0ecc14');
+				localStorage.setItem('side-panel-divider','#2F4F4F');
+				localStorage.setItem('side-panel-divider1','#2F4F4F');
+			});
+			$("#color2").click(function(){
+				$("#side-panel").css("background-color","#800000");
+				$("#user_profile").css({'background-color':'#B22222','border-color':'#B22222'});
+				$("#user_profile .profile_image").css("background-color","#800000");
+				$(".side-panel-icons div").css("border-color","#B22222");
+				$("#logout-div p").css("color","#0ecc14");
+				$(".side-panel-divider").css("border-color","#2F4F4F");
+				$(".side-panel-divider1").css("border-color","#2F4F4F");
+				localStorage.setItem('side-panel','#800000');
+				localStorage.setItem('user_profile','#B22222');
+				localStorage.setItem('profile_image','#800000');
+				localStorage.setItem('side-panel-icons','#B22222');
+				localStorage.setItem('logout-div','#0ecc14');
+				localStorage.setItem('side-panel-divider','#2F4F4F');
+				localStorage.setItem('side-panel-divider1','#2F4F4F');
+			});
+			$("#color3").click(function(){
+				$("#side-panel").css("background-color","#1E90FF");
+				$("#user_profile").css({'background-color':'#191970','border-color':'#191970'});
+				$("#user_profile .profile_image").css("background-color","#1E90FF");
+				$(".side-panel-icons div").css("border-color","#191970");
+				$("#logout-div p").css("color","#191970");
+				$(".side-panel-divider").css("border-color","#2F4F4F");
+				$(".side-panel-divider1").css("border-color","#2F4F4F");
+				localStorage.setItem('side-panel','#1E90FF');
+				localStorage.setItem('user_profile','#191970');
+				localStorage.setItem('profile_image','#1E90FF');
+				localStorage.setItem('side-panel-icons','#191970');
+				localStorage.setItem('logout-div','#191970');
+				localStorage.setItem('side-panel-divider','#2F4F4F');
+				localStorage.setItem('side-panel-divider1','#2F4F4F');
+			});
+			$("#color4").click(function(){
+				$("#side-panel").css("background-color","#006400");
+				$("#user_profile").css({'background-color':'#3CB371','border-color':'#3CB371'});
+				$("#user_profile .profile_image").css("background-color","#006400");
+				$(".side-panel-icons div").css("border-color","#3CB371");
+				$("#logout-div p").css("color","#3CB371");
+				$(".side-panel-divider").css("border-color","#333333");
+				$(".side-panel-divider1").css("border-color","#333333");
+				localStorage.setItem('side-panel','#006400');
+				localStorage.setItem('user_profile','#3CB371');
+				localStorage.setItem('profile_image','#006400');
+				localStorage.setItem('side-panel-icons','#3CB371');
+				localStorage.setItem('logout-div','#3CB371');
+				localStorage.setItem('side-panel-divider','#333333');
+				localStorage.setItem('side-panel-divider1','#333333');
+			});
+			$("#color5").click(function(){
+				$("#side-panel").css("background-color","#DC143C");
+				$("#user_profile").css({'background-color':'#F08080','border-color':'#F08080'});
+				$("#user_profile .profile_image").css("background-color","#DC143C");
+				$(".side-panel-icons div").css("border-color","#F08080");
+				$("#logout-div p").css("color","#FFA07A");
+				localStorage.setItem('side-panel','#DC143C');
+				localStorage.setItem('user_profile','#F08080');
+				localStorage.setItem('profile_image','#DC143C');
+				localStorage.setItem('side-panel-icons','#F08080');
+				localStorage.setItem('logout-div','#FFA07A');
+				localStorage.setItem('side-panel-divider','#2F4F4F');
+				localStorage.setItem('side-panel-divider1','#2F4F4F');
+			});
+			$("#color1-1").click(function(){
+				$("#page-header h3").css("background-color","#1ec28a");
+				localStorage.setItem('page-header','#1ec28a');
+			});
+			$("#color2-1").click(function(){
+				$("#page-header h3").css("background-color","#c21e56");
+				localStorage.setItem('page-header','#c21e56');
+			});
+			$("#color3-1").click(function(){
+				$("#page-header h3").css("background-color","#DAA520");
+				localStorage.setItem('page-header','#DAA520');
+			});
+			$("#color4-1").click(function(){
+				$("#page-header h3").css("background-color","#9ACD32");
+				localStorage.setItem('page-header','#9ACD32');
+			});
+			$("#color5-1").click(function(){
+				$("#page-header h3").css("background-color","#9932CC");
+				localStorage.setItem('page-header','#9932CC');
+			});
+
+		});
+
+		//Dashboard download function----------------------------
+		$(function(){ 	
+			$("#dashboard_report_btn").click(function () {
+				const filename  = 'Inventory Summery Report.pdf';
+				var d = new Date();
+				html2canvas(document.querySelector('#dashboard_content')).then(canvas => {
+					let pdf = new jsPDF('p', 'mm', 'a4');
+					pdf.setFontSize(14.5);
+	    			pdf.text('Faculty of Technology, SUSL', 72, 10);
+	    			pdf.setFontSize(10.5);
+	    			pdf.text('Inventory Details summery Report', 77, 16);
+	    			pdf.setFontSize(9);
+	    			pdf.text('Date : '+d, 57, 21);
+					pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 28, 190, 260);
+					pdf.save(filename);
+				});
+			});
 		});
 
 		$( function() {
@@ -200,16 +411,17 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 				e2.preventDefault();
 
 				var check_main_location = $("#main_locations").val();
+				var year = $("#year1").val();
 				$.ajax({
 					type: 'POST',
 					url: 'check_item_main.php',
-					data: {check_main_location:check_main_location},
+					data: {check_main_location:check_main_location,year:year},
 					success: function(data9){
 						$("#table-content").html(data9);
-						$("#download-pdf-btn").removeClass('disabled');
-						$("#download-excel-btn").removeClass('disabled');
-						$("#print-table-btn").removeClass('disabled');
-						$("#refresh-btn").removeClass('disabled');
+						$("#download-pdf-btn").show();
+						$("#download-excel-btn").show();
+						$("#print-table-btn").show();
+						$("#refresh-btn").show();
 
 						$.fn.digits = function(){ 
 						    return this.each(function(){ 
@@ -228,16 +440,17 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 				e2.preventDefault();
 
 				var check_sub_location = $("#sub_locations").val();
+				var year = $("#year2").val();
 				$.ajax({
 					type: 'POST',
 					url: 'check_item.php',
-					data: {check_sub_location:check_sub_location},
+					data: {check_sub_location:check_sub_location,year:year},
 					success: function(data1){
 						$("#table-content").html(data1);
-						$("#download-pdf-btn").removeClass('disabled');
-						$("#download-excel-btn").removeClass('disabled');
-						$("#print-table-btn").removeClass('disabled');
-						$("#refresh-btn").removeClass('disabled');
+						$("#download-pdf-btn").show();
+						$("#download-excel-btn").show();
+						$("#print-table-btn").show();
+						$("#refresh-btn").show();
 
 						$.fn.digits = function(){ 
 						    return this.each(function(){ 
@@ -256,16 +469,17 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 				e5.preventDefault();
 
 				var check_inventory_wise = $("#check_inventory_item").val();
+				var year = $("#year3").val();
 				$.ajax({
 					type: 'POST',
 					url: 'check_item_wise.php',
-					data: {check_inventory_wise:check_inventory_wise},
+					data: {check_inventory_wise:check_inventory_wise,year:year},
 					success: function(data5){
 						$("#table-content").html(data5);
-						$("#download-pdf-btn").removeClass('disabled');
-						$("#download-excel-btn").removeClass('disabled');
-						$("#print-table-btn").removeClass('disabled');
-						$("#refresh-btn").removeClass('disabled');
+						$("#download-pdf-btn").show();
+						$("#download-excel-btn").show();
+						$("#print-table-btn").show();
+						$("#refresh-btn").show();
 
 						$.fn.digits = function(){ 
 						    return this.each(function(){ 
@@ -374,14 +588,13 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 				} else {
 					var serial_num = "N/A";
 				}
-				var quantity = $("#quantity").val();
 				var price = $("#price").val();
 				var purchased_date = $("#purchased_date").val();
 				var inventory_status = $("#inventory_status").val();
 				$.ajax({
 					type: 'POST',
 					url: 'add_new_item.php',
-					data: {main_location:main_location, sub_location:sub_location, main_inventory_type:main_inventory_type, sub_inventory_type:sub_inventory_type, inventory_code:inventory_code, serial_num:serial_num, quantity:quantity, price:price, purchased_date:purchased_date,inventory_status:inventory_status},
+					data: {main_location:main_location, sub_location:sub_location, main_inventory_type:main_inventory_type, sub_inventory_type:sub_inventory_type, inventory_code:inventory_code, serial_num:serial_num,price:price, purchased_date:purchased_date,inventory_status:inventory_status},
 					success: function(data3){
 						$("#form2")[0].reset();
 						$("#serial_num").hide(200);
@@ -400,7 +613,7 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 				var first_name = $("#first_name").val();
 				var second_name = $("#second_name").val();
 				var email = $("#email").val();
-				var userrole = $("#userrole").val();
+				var userrole = $("#userrole").val();				
 				var username = $("#username").val();
 				var password = $("#password").val();
 				var re_password = $("#re_password").val();
@@ -568,36 +781,55 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 	</script>
 	
 	<div class="content-div">
+		<span id="side_panel_toggler" title="Collapse Side Panel"><i class="fas fa-bars fa-lg"></i></span>
 		<div id="side-panel">
 			<div id="logout-div">
-				<?php if(isset($_SESSION["username"])){ ?>
-					<h5>Welcome!</h5><h4><?php echo " ".$_SESSION["title"].". ".$_SESSION["first_name"]; ?></h4>
-				<?php 
-				}
-				?>
+				<div id="user_profile">
+					<div class="profile_image">
+					<?php
+					$id_img = $_SESSION["id"];
+					$sql_img = "SELECT * FROM users WHERE id='$id_img'";
+					$sql_rslt = mysqli_query($conn,$sql_img);
+					$row = mysqli_fetch_array($sql_rslt);
+					echo '<img src="images/users/'.$row["user_image"].'">';
+					?>
+					</div>
+					<div class="profile_name">
+						<h5><?php echo " ".$row["title"].". ".$row["first_name"]; ?></h5>
+					</div>
+					<h6 id="email-para">
+						<?php
+						if (isset($_SESSION['email'])) {
+							echo $_SESSION['email'];
+						}
+						?>
+					</h6>
+				</div>
+				<!-- <div class="side-panel-divider1"></div> -->
 				<p>
 					<?php
 					if (isset($_SESSION["user_type"])) {
 						if ($_SESSION["user_type"] == "admin") {
-							echo "You successfully logged as an Admin";
+							echo "You logged as an <b>Admin</b>";
 						}elseif ($_SESSION["user_type"] == "manager") {
-							echo "You successfully logged as a Manager";
+							echo "You logged as a <b>Manager</b>";
 						}elseif($_SESSION["user_type"] == "user"){
-							echo "You successfully logged as an User";
+							echo "You logged as an <b>User</b>";
+						}elseif ($_SESSION["user_type"] == "super_admin") {
+							echo "You logged as a <b>Super Admin</b>";
 						}
 					}
 					?>
 				</p>
-				<a href="log_out.php" class="btn btn-danger btn-sm"><b>LOG OUT<i id="log_out_icon" class="fas fa-sign-out-alt fa-lg"></i></b></a>
+				<!-- <a href="log_out.php" class="btn btn-danger btn-sm"><b>LOG OUT<i id="log_out_icon" class="fas fa-sign-out-alt fa-lg"></i></b></a> -->
 			</div>
 			<div class="side-panel-divider"></div>
 			<div id="calendar-div"></div>
-			<br>
-			<div id="clock" class="dark">
-				<div class="display">
-					<div class="digits"></div>
-					<div class="ampm"></div>
-				</div>
+			<div class="side-panel-divider1"></div>
+			<div class="side-panel-icons">
+				<div id="settings-icon" data-toggle="modal" data-target="#setting_modal" title="Settings"><i class="fas fa-cog fa-lg"></i></div>
+				<div id="logout-icon" ><a href="log_out.php" title="Log Out"><i class="fas fa-power-off fa-lg"></i></a></div>
+				<div id="profile-icon" data-toggle="modal" data-target="#exampleModalCenter" title="View User Profile"><i class="fas fa-user-circle fa-lg"></i></div>
 			</div>
 		</div>
 		<div id="main-content-panel">
@@ -613,7 +845,14 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 			  		<ul class="nav nav-tabs flex-column" id="mobile-navi">
 			  			<?php 
 							if (isset($_SESSION["user_type"])) {
-								if ($_SESSION["user_type"] == "admin") {
+								if ($_SESSION["user_type"] == "super_admin") {
+									echo '<li class="nav-item" id="check-tab"><a class="nav-link active" id="nav-dash-tab" data-toggle="tab" href="#nav-dash" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-chart-line"></i><span class="verticle-line"></span>Dashboard</a></li>';
+									echo '<li class="nav-item" id="check-tab"><a class="nav-link" id="nav-check-tab" data-toggle="tab" href="#nav-check" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-search"></i><span class="verticle-line"></span>Check</a></li>';
+									echo '<li class="nav-item" id="add-tab"><a class="nav-link" id="nav-submit-tab" data-toggle="tab" href="#nav-submit" role="tab" aria-controls="profile" aria-selected="false"><i class="fas fa-plus"></i><span class="verticle-line"></span>Add</a></li>';
+									echo '<li class="nav-item" id="user-tab"><a class="nav-link" id="nav-user-tab" data-toggle="tab" href="#nav-user" role="tab" aria-controls="contact" aria-selected="false"><i class="fas fa-users"></i><span class="verticle-line"></span>Users</a></li>';
+									echo '<li class="nav-item" id="location-tab"><a class="nav-link" id="nav-location-tab" data-toggle="tab" href="#nav-location" role="tab" aria-controls="contact" aria-selected="false"><i class="fas fa-map-marker-alt"></i><span class="verticle-line"></span>Locations</a></li>';
+									echo '<li class="nav-item" id="more-tab"><a class="nav-link" id="nav-more-tab" data-toggle="tab" href="#nav-more" role="tab" aria-controls="contact" aria-selected="false"><i class="fas fa-trash"></i><span class="verticle-line"></span>More</a></li>';
+								}elseif ($_SESSION["user_type"] == "admin") {
 									echo '<li class="nav-item" id="check-tab"><a class="nav-link active" id="nav-dash-tab" data-toggle="tab" href="#nav-dash" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-chart-line"></i><span class="verticle-line"></span>Dashboard</a></li>';
 									echo '<li class="nav-item" id="check-tab"><a class="nav-link" id="nav-check-tab" data-toggle="tab" href="#nav-check" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-search"></i><span class="verticle-line"></span>Check</a></li>';
 									echo '<li class="nav-item" id="user-tab"><a class="nav-link" id="nav-user-tab" data-toggle="tab" href="#nav-user" role="tab" aria-controls="contact" aria-selected="false"><i class="fas fa-users"></i><span class="verticle-line"></span>Users</a></li>';
@@ -631,11 +870,25 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 						?>	
 			  		</ul>
 			  		<div id="logout-div">
-						<?php if(isset($_SESSION["username"])){ ?>
-							<h5>Welcome!</h5><h4><?php echo " ".$_SESSION["title"].". ".$_SESSION["first_name"]; ?></h4>
-						<?php 
-						}
-						?>
+						<div class="row" id="user_profile" data-toggle="modal" data-target="#exampleModalCenter">
+							<div class="profile_image col-sm-4 col-md-4 col-lg-4">
+							<?php
+							$id_img = $_SESSION["id"];
+							$sql_img = "SELECT * FROM users WHERE id='$id_img'";
+							$sql_rslt = mysqli_query($conn,$sql_img);
+							$row = mysqli_fetch_array($sql_rslt);
+							echo '<img src="images/users/'.$row["user_image"].'">';
+							?>
+							</div>
+							<div class="profile_name col-sm-8 col-md-8 col-lg-8">
+							<?php if(isset($_SESSION["username"])){ ?>
+								<i>Welcome!</i><h5><?php echo " ".$_SESSION["title"].". ".$_SESSION["first_name"]; ?></h5>
+							<?php 
+							}
+							?>
+							</div>
+						</div>
+						<div class="side-panel-divider1"></div>
 						<p>
 							<?php
 							if (isset($_SESSION["user_type"])) {
@@ -680,131 +933,141 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 					}
 				?>
 			</ul>
+
 			<div class="tab-content" id="nav-tabContent">
 
 			<!-- Dashboard tab --->
 				<div class="tab-pane fade show active " id="nav-dash" role="tabpanel" aria-labelledby="nav-dash-tab">
-					<div class="tab-title">
-			  			<h4>Dashboard</h4>
+			  		<div class="row">
+			  			<div class="col-sm-9 col-md-9 col-lg-9">
+			  				<div class="tab-title" id="dashboard-title"><h4>Dashboard</h4></div>
+			  			</div>
+			  			<div class="col-sm-3 col-md-3 col-lg-3" style="text-align: right; margin-top: 8px;">
+			  				<button id="dashboard_report_btn" class="btn btn-info btn-sm"><i class="fas fa-cloud-download-alt"></i>Generate a Report</button>
+			  			</div>
 			  		</div>
-		  			<div class="row">
-		  				<div class="col-sm-12 col-md-6 col-lg-6 external_row">
-		  					<div class="row main_dash_divs">
-		  						<div class="col-sm-12 col-md-3 col-lg-3 main_dash_img_div">
-		  							<img src="images/dollar.png">
-		  						</div>
-		  						<div class="col-sm-12 col-md-9 col-lg-9 main_dash_txt_div">
-		  							<div class="main_dash_div_title">
-		  								Total Inventory Value
-		  							</div>
-		  							<div class="main_dash_div_vals numbers">
-	  								<?php
-										$completeTotal = 0;
-										$sql_dash1 = "SELECT SUM(quantity*price) AS total FROM added_inventory";
-										$sql_dash1_results = mysqli_query($conn,$sql_dash1);
-										while ($row = mysqli_fetch_array($sql_dash1_results)) {
-											$completeTotal = $completeTotal + $row["total"];
-										}
-										echo "Rs. ".number_format((float)$completeTotal,2,'.','');
-	  								?>
-		  							</div>
-		  						</div>
-		  					</div>
-		  				</div>
-		  				<div class="col-sm-12 col-md-5 col-lg-5 external_row">
-		  					<div class="row main_dash_divs">
-		  						<div class="col-sm-12 col-md-4 col-lg-4 main_dash_img_div" id="warehouse">
-		  							<img src="images/warehouse.png">
-		  						</div>
-		  						<div class="col-lg-8 col-sm-12 col-md-8 main_dash_txt_div">
-		  							<div class="main_dash_div_title">
-		  								Total Inventories
-		  							</div>
-		  							<div class="main_dash_div_vals numbers">
-	  								<?php
-										$totalItems = 0;
-										$sql_dash2 = "SELECT SUM(quantity) AS total FROM added_inventory";
-										$sql_dash2_results = mysqli_query($conn,$sql_dash2);
-										while ($row = mysqli_fetch_array($sql_dash2_results)) {
-											$totalItems = $totalItems + $row["total"];
-										}
-										echo $totalItems;
-	  								?>
-		  							</div>
-		  						</div>
-		  					</div>
-		  				</div>
-		  			</div>
-		  			<hr>
-		  			<div class="row">
-		  				<div class="col-sm-12 col-md-4 col-lg-4 sub_dash_divs external1_row" id="loc_dash">
-		  					<div class="sub_dash_div_img">
-		  						<div class="div-curve1"><div class="div-curve2"></div></div>
-		  						<img src="images/location.png">
-		  					</div>
-		  					<div class="sub_dash_div_txt">
-	  							<div class="sub_dash_div_vals numbers">
-  								<?php
-  									$totalRows = 0;
-									$sql_dash3 = "SELECT COUNT(*) AS total FROM sub_locations";
-									$sql_dash3_results = mysqli_query($conn,$sql_dash3);
-									while ($row = mysqli_fetch_array($sql_dash3_results)) {
-										$totalRows = $totalRows + $row["total"];
-									}
-									echo $totalRows;
-  								?>
-	  							</div>
-		  						<div class="sub_dash_div_title">
-	  								Locations
-	  							</div>
-		  					</div>
-		  				</div>
-		  				<div class="col-sm-12 col-md-4 col-lg-4 sub_dash_divs external1_row" id="user_dash">
-		  					<div class="sub_dash_div_img">
-		  						<div class="div-curve1"><div class="div-curve2"></div></div>
-		  						<img src="images/group.png">
-		  					</div>
-		  					<div class="sub_dash_div_txt">
-	  							<div class="sub_dash_div_vals numbers">
-  								<?php
-									$totalRows = 0;
-									$sql_dash4 = "SELECT COUNt(*) AS total FROM users";
-									$sql_dash4_results = mysqli_query($conn,$sql_dash4);
-									while ($row = mysqli_fetch_array($sql_dash4_results)) {
-										$totalRows = $totalRows + $row["total"];
-									}
-									echo $totalRows;
-  								?>
-	  							</div>
-		  						<div class="sub_dash_div_title">
-	  								Authorized Users
-	  							</div>
-		  					</div>
-		  				</div>
-		  				<div class="col-sm-12 col-md-3 col-lg-3 sub_dash_divs external1_row" id="trash_dash">
-		  					<div class="sub_dash_div_img">
-		  						<div class="div-curve1"><div class="div-curve2"></div></div>
-		  						<img src="images/trash.png">
-		  					</div>
-		  					<div class="sub_dash_div_txt">
-	  							<div class="sub_dash_div_vals numbers">
-  								<?php
-									$totalRows = 0;
-									$sql_dash5 = "SELECT COUNT(*) AS total FROM recovered_inventory";
-									$sql_dash5_results = mysqli_query($conn,$sql_dash5);
-									while ($row = mysqli_fetch_array($sql_dash5_results)) {
-										$totalRows = $totalRows + $row["total"];
-									}
-									echo $totalRows;
-  								?>
-	  							</div>
-		  						<div class="sub_dash_div_title">
-	  								Deleted Logs
-	  							</div>
-		  					</div>
-		  				</div>
-		  			</div>
+			  		<div id="dashboard_content">
+			  			<div class="row" id="content_1">
+				  			<div class="col-sm-12 col-md-7 col-lg-7">
+				  				<div id="external_row1">
+	  								<div class="main_dash_img_div">
+	  									<img src="images/dollar.png">
+	  								</div>
+	  								<div class="main_dash_txt_div">
+	  									<div class="main_dash_div_title">
+			  								Total Inventory Value
+			  							</div>
+			  							<div class="main_dash_div_vals numbers">
+		  								<?php
+											$completeTotal = 0;
+											$sql_dash1 = "SELECT SUM(quantity*price) AS total FROM added_inventory";
+											$sql_dash1_results = mysqli_query($conn,$sql_dash1);
+											while ($row = mysqli_fetch_array($sql_dash1_results)) {
+												$completeTotal = $completeTotal + $row["total"];
+											}
+											echo "Rs. ".number_format((float)$completeTotal,2,'.','');
+		  								?>
+			  							</div>
+	  								</div>
+				  				</div>
+				  			</div>
+				  			<div class="col-sm-12 col-md-5 col-lg-5">
+				  				<div id="external_row2">
+	  								<div class="main_dash_img_div">
+	  									<img src="images/warehouse.png">
+	  								</div>
+	  								<div class="main_dash_txt_div">
+	  									<div class="main_dash_div_title">
+			  								Total Inventories
+			  							</div>
+			  							<div class="main_dash_div_vals numbers">
+		  								<?php
+											$totalItems = 0;
+											$sql_dash2 = "SELECT SUM(quantity) AS total FROM added_inventory";
+											$sql_dash2_results = mysqli_query($conn,$sql_dash2);
+											while ($row = mysqli_fetch_array($sql_dash2_results)) {
+												$totalItems = $totalItems + $row["total"];
+											}
+											echo $totalItems;
+		  								?>
+			  							</div>
+	  								</div>
+				  				</div>
+				  			</div>
+				  		</div>
+			  			<br>
+			  			<div class="row">
+			  				<div class="col-sm-12 col-md-4 col-lg-4">
+			  					<div class="sub_small_divs" id="location-div">
+			  						<div class="sub_dash_div_title">
+			  							<span>
+		  								<?php
+		  									$totalRows = 0;
+											$sql_dash3 = "SELECT COUNT(*) AS total FROM sub_locations";
+											$sql_dash3_results = mysqli_query($conn,$sql_dash3);
+											while ($row = mysqli_fetch_array($sql_dash3_results)) {
+												$totalRows = $totalRows + $row["total"];
+											}
+											echo $totalRows;
+		  								?>
+			  							</span>
+			  							Locations
+			  						</div>
+			  						<div class="sub_dash_div_img" id="loc-div-img">
+			  							<img src="images/location.png">
+			  						</div>
+			  					</div>
+			  				</div>
+			  				<div class="col-sm-12 col-md-4 col-lg-4">
+			  					<div class="sub_small_divs" id="users-div">
+			  						<div class="sub_dash_div_title">
+			  							<span>
+		  								<?php
+		  									$totalRows = 0;
+											$sql_dash4 = "SELECT COUNT(*) AS total FROM users WHERE NOT user_type='super_admin'";
+											$sql_dash4_results = mysqli_query($conn,$sql_dash4);
+											while ($row = mysqli_fetch_array($sql_dash4_results)) {
+												$totalRows = $totalRows + $row["total"];
+											}
+											echo $totalRows;
+		  								?>
+			  							</span>
+			  							Authorized Users
+			  						</div>
+			  						<div class="sub_dash_div_img" id="user-div-img">
+			  							<img src="images/group.png">
+			  						</div>
+			  					</div>
+			  				</div>
+			  				<div class="col-sm-12 col-md-4 col-lg-4">
+			  					<div class="sub_small_divs" id="trash-div">
+			  						<div class="sub_dash_div_title">
+			  							<span>
+		  								<?php
+		  									$totalRows = 0;
+											$sql_dash5 = "SELECT COUNT(*) AS total FROM recovered_inventory";
+											$sql_dash5_results = mysqli_query($conn,$sql_dash5);
+											while ($row = mysqli_fetch_array($sql_dash5_results)) {
+												$totalRows = $totalRows + $row["total"];
+											}
+											echo $totalRows;
+		  								?>
+			  							</span>
+			  							Deleted Logs
+			  						</div>
+			  						<div class="sub_dash_div_img" id="trash-div-img">
+			  							<img src="images/trash.png">
+			  						</div>
+			  					</div>
+			  				</div>
+			  			</div>
+			  			<br><br>
+			  			<!-- Graphs area -->
+			  			<div id="graphs-section"></div>
+			  		</div>
 				</div>
+
+
 			<!-- Check inventory tab -->
 			  	<div class="tab-pane fade show " id="nav-check" role="tabpanel" aria-labelledby="nav-check-tab">
 			  		<div class="tab-title">
@@ -813,7 +1076,7 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 			  		
 			  		<div class="check-condition-div">
 			  			<div class="row">
-			  				<div class="col-md-5">
+			  				<div class="col-md-4">
 			  					<label for="inputState">Search Method</label>
 			  					<select class="form-control form-control-sm" name="search-type" id="search-type">
 			  						<option value="val3" selected>Main Location wise</option>
@@ -824,10 +1087,10 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 			  				<div class="col-md-1">
 			  					<div class="verticle-line-check"></div>
 			  				</div>
-			  				<div class="col-md-6" id="form1-1-1-div">
+			  				<div class="col-md-7" id="form1-1-1-div">
 			  					<form id="form1-1-1">
 									<div class="row" class="check-condition-div">
-									    <div class="form-group col-md-12">
+									    <div class="form-group col-md-9">
 									      	<label for="inputState">Main Location</label>
 									      	<select class="form-control form-control-sm" name="main_locations" id="main_locations">
 									        	<option value="" selected>Choose...</option>
@@ -843,19 +1106,23 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 									    		?>
 									      	</select>
 									    </div>
+									    <div class="form-group col-md-3">
+									    	<label for="inputState">Year <i class="italic_text">(Optional)</i></label>
+									    	<input type="text" class="form-control form-control-sm" name="year1" id="year1">
+									    </div>
 									</div>
 									<div class="button-div" id="check-button-div">
 								    	<button type="submit" class="btn btn-success btn-sm form-button" id="check_button2"><i class="fas fa-search"></i>Check Inventory</button>
 								    </div>
 								</form>
-							    <div class="col-md-6">
+							    <div class="col-md-7">
 							    	<div id="check-alert-div"></div>
 							    </div>
 			  				</div>
-			  				<div class="col-md-6" id="form1-div">
+			  				<div class="col-md-7" id="form1-div">
 			  					<form id="form1">
 									<div class="row" class="check-condition-div">
-									    <div class="form-group col-md-12">
+									    <div class="form-group col-md-9">
 									      	<label for="inputState">Sub Location</label>
 									      	<select class="form-control form-control-sm" name="sub_locations" id="sub_locations">
 									        	<option value="" selected>Choose...</option>
@@ -871,28 +1138,36 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 									    		?>
 									      	</select>
 									    </div>
+									    <div class="form-group col-md-3">
+									    	<label for="inputState">Year <i class="italic_text">(Optional)</i></label>
+									    	<input type="text" class="form-control form-control-sm" name="year2" id="year2">
+									    </div>
 									</div>
 									<div class="button-div" id="check-button-div">
 								    	<button type="submit" class="btn btn-success btn-sm form-button" id="check_button"><i class="fas fa-search"></i>Check Inventory</button>
 								    </div>
 								</form>
-							    <div class="col-md-6">
+							    <div class="col-md-7">
 							    	<div id="check-alert-div"></div>
 							    </div>
 			  				</div>
-			  				<div class="col-md-6" id="form1-1-div">
+			  				<div class="col-md-7" id="form1-1-div">
 			  					<form id="form1-1">
 									<div class="row" class="check-condition-div">
-									    <div class="form-group col-md-12">
-									      	<label for="inputState">Inventory Code</label>
-									      	<input type="text" class="form-control form-control-sm" id="check_inventory_item" name="check_inventory_item" placeholder="FT/XX/XXXX/XXX/XXX">
+									    <div class="form-group col-md-9">
+									      	<label for="inputState">Inventory Category</label>
+									      	<input type="text" class="form-control form-control-sm" id="check_inventory_item" name="check_inventory_item" placeholder="Eg :- Chair">
+									    </div>
+									    <div class="form-group col-md-3">
+									    	<label for="inputState">Year <i class="italic_text">(Optional)</i></label>
+									    	<input type="text" class="form-control form-control-sm" name="year3" id="year3">
 									    </div>
 									</div>
 									<div class="button-div" id="check-button-div">
 								    	<button type="submit" class="btn btn-success btn-sm form-button" id="check_button1"><i class="fas fa-search"></i>Check Inventory</button>
 								    </div>
 								</form>
-							    <div class="col-md-6">
+							    <div class="col-md-7">
 							    	<div id="check-alert-div1"></div>
 							    </div>
 			  				</div>
@@ -900,15 +1175,16 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 			  		</div>
 					<div class="table-responsive-sm table-responsive-md" id="table-content"></div>
 					<hr>
-					<div id="print-button-div">
-						<button class="btn btn-primary btn-sm" id="download-pdf-btn"><i class="fas fa-file-pdf fa-lg"></i><b>PDF</b></button>
-						<button class="btn btn-success btn-sm" id="download-excel-btn" onclick="exportTableToExcel()"><i class="fas fa-file-excel fa-lg"></i><b>EXCEL</b></button>
-					</div>
-
-					<hr>
-
 					<div class="row">
-						<div class="col-md-8">
+						<div class="col-md-4" id="button_div1">
+							<button class="btn btn-primary btn-sm" id="download-pdf-btn"><i class="fas fa-file-pdf fa-lg"></i><b>PDF</b></button>
+							<button class="btn btn-success btn-sm" id="download-excel-btn" onclick="exportTableToExcel()"><i class="fas fa-file-excel fa-lg"></i><b>EXCEL</b></button>
+						</div>
+					<?php
+					if (isset($_SESSION["user_type"])) {
+						if (($_SESSION["user_type"] == "super_admin")||($_SESSION["user_type"] == "admin")||($_SESSION["user_type"] == "manager")) {
+					?>
+						<div class="col-md-8" id="button_div2">
 							<div class="form-group col-md-5" id="update-statement-div">
 				    			<label class="custom_check">Update Inventory Status
 								  <input type="checkbox" name="check" id="update_status_check_btn">
@@ -934,11 +1210,18 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
   								</form>
   							</div>
 						</div>
+					<?php
+						}
+					}
+					?>
 					</div>
 			  	</div>
 
 			<!-- Submit inventory tab -->
 			  	<div class="tab-pane fade" id="nav-submit" role="tabpanel" aria-labelledby="nav-submit-tab">
+			  		<div class="tab-title">
+			  			<h4>Add a new inventory</h4>
+			  		</div>
 			  		<div class="check-condition-div">
 			  			<form id="form2">
 			  				<div class="row" >
@@ -999,15 +1282,11 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 					    		</div>
 							</div>
 							<div class="row">
-					    		<div class="form-group col-md-3">
-							      	<label for="inputZip">Quantity</label>
-							      	<input type="text" class="form-control form-control-sm" id="quantity" name="quantity" placeholder="Quantity here...">
-					    		</div>
-							    <div class="form-group col-md-4">
-							      	<label for="inputCity">Price [Rs]</label>
-							      	<input type="text" class="form-control form-control-sm" id="price" name="price" placeholder="Price per item (eg:- XXXXX.XX)">
-							    </div>
 							    <div class="form-group col-md-5">
+							      	<label for="inputCity">Price [Rs]</label>
+							      	<input type="text" class="form-control form-control-sm" id="price" name="price" placeholder="Eg :- 2000.00">
+							    </div>
+							    <div class="form-group col-md-4">
 							      	<label for="inputState">Purchased Date</label>
 							      	<input type="text" class="form-control form-control-sm" id="purchased_date" name="purchased_date" placeholder="DD/MM/YYYY">
 							    </div>
@@ -1029,7 +1308,7 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 			<!-- User manage tab -->
 			  	<div class="tab-pane fade" id="nav-user" role="tabpanel" aria-labelledby="nav-user-tab">
 			  		<div class="tab-title">
-			  			<h4>Manage Users Details</h4>
+			  			<h4>Add / Manage Users</h4>
 			  		</div>
 			  		<div class="check-condition-div">
 			  			<form id="form4">
@@ -1048,7 +1327,7 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 							      	<input type="text" class="form-control form-control-sm" id="first_name" name="first_name" placeholder="First name here...">
 							    </div>
 							    <div class="form-group col-md-5">
-							      	<label for="inputZip">Second Name</label>
+							      	<label for="inputZip">Last Name</label>
 							      	<input type="text" class="form-control form-control-sm" id="second_name" name="second_name" placeholder="Second name here...">
 							    </div>
 							</div>
@@ -1198,14 +1477,16 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 
 			  	<div class="tab-pane fade" id="nav-more" role="tabpanel" aria-labelledby="nav-more-tab">
 			  		<div class="tab-title">
-			  			<h4>Analyze Deleted Inventories</h4>
+			  			<div class="row">
+			  				<div class="col-sm-10 col-md-10 col-lg-10"><h4>Analyze Deleted Inventories</h4></div>
+			  				<div class="col-sm-2 col-md-2 col-lg-2">
+			  					<button class="btn btn-info btn-sm" id="refresh_btn"><i class="fas fa-sync-alt"></i>Reload the table</button>
+			  				</div>
+			  			</div>
 			  		</div>
 			  		<div class="row" id="loc-row">
 	  					<div class="col-md-8" id="recover_inv_div">
-	  						<div class="refresh_btn_div">
-	  							<i>Below table shows all the deleted inventory logs</i>
-	  							<button class="btn btn-info btn-sm" id="refresh_btn"><i class="fas fa-sync-alt fa-lg"></i><b>Refresh</b></button>
-	  						</div>
+	  						<div class="refresh_btn_div"><i>Below table shows all the deleted inventory logs</i></div>
   							<div class="re_invent_table_view table-responsive-sm table-responsive-md">
   								<table class="table table-bordered table-sm table-hover" id="re_invent_table">
   									<thead class="thead-dark">
@@ -1252,6 +1533,10 @@ if ((isset($_SESSION["username"])) && (isset($_SESSION["user_type"]))) {
 			</div>
 		</div>
 	</div>
+
+	<?php include 'profile_modal.php'; ?>
+	<?php include 'settings_modal.php'; ?>
+
 	<script>
 		function exportTableToExcel(tableID, filename = ''){
 		    var downloadLink;

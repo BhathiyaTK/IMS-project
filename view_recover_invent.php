@@ -1,18 +1,8 @@
 <?php
-$host="localhost";
-$db_name="root";
-$db_pass= "";
-$db="tech";
 
-$conn = new mysqli($host,$db_name,$db_pass,$db);
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once 'db.php';
 
 session_start();
-
-
 
 $re_invent_id = $_POST["re_invent_id"];
 
@@ -24,15 +14,14 @@ while ($row=$result->fetch_assoc()) {
 
 <script type="text/javascript">
 
-  function restore(){
-    var item_id1 = <?php echo $re_invent_id; ?>;
+  function restore(deleteID){
     $.ajax({
       type : "POST",
       url : "recover_item.php",
-      data : {item_id1:item_id1},
+      data : {deleteID:deleteID},
       success : function(result2){
         $("#re_invent_modal_content").html(result2);
-        $("#row"+item_id1).remove();
+        $("#row"+deleteID).remove();
       }
     });
   }
@@ -71,7 +60,7 @@ while ($row=$result->fetch_assoc()) {
   </ul>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-success btn-sm" onclick="restore();"><b>Restore Item</b></button>
+  <button type="button" class="btn btn-success btn-sm" onclick="restore(<?php echo $re_invent_id; ?>);"><b>Restore Item</b></button>
 </div>
 
 <?php

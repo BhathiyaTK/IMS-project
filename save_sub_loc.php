@@ -1,15 +1,6 @@
 <?php
 
-$host="localhost";
-$db_name="root";
-$db_pass= "";
-$db="tech";
-
-$conn = new mysqli($host,$db_name,$db_pass,$db);
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once 'db.php';
 
 $save_loc_id = $_POST["loc_id"];
 $save_main_loc_value = $_POST["main_loc_value"];
